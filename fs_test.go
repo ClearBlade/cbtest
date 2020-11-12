@@ -110,6 +110,8 @@ func TestMergeFoldersWithSingleNestedSourceSucceeds(t *testing.T) {
 		fmt.Sprintf("%s/foo", tempdir),
 		fmt.Sprintf("%s/foo/foo.txt", tempdir),
 		fmt.Sprintf("%s/qux", tempdir),
+		fmt.Sprintf("%s/sys", tempdir),
+		fmt.Sprintf("%s/sys/system.json", tempdir),
 	}
 
 	assert.Equal(t, expected, listFiles(tempdir))

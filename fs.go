@@ -39,7 +39,7 @@ func MakeTempDir() (string, func()) {
 	}
 }
 
-// MergeFolders merges all the `srcs` folders into a single `dest` path.
+// MergeFolders merges all the content of `srcs` folders into a single `dest` path.
 func MergeFolders(dest string, srcs ...string) error {
 
 	if !IsDir(dest) {

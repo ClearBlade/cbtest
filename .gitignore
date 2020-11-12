@@ -783,3 +783,10 @@ MigrationBackup/
 .ionide/
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,macos,windows,sublimetext,notepadpp,visualstudio,visualstudiocode,vim,python,venv,virtualenv,go,hugo,git,intellij+all
+
+
+
+### CUSTOM ###
+
+!golden/qux/node_modules/
+

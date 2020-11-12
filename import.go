@@ -22,7 +22,7 @@ func checkSystem(path string) error {
 	return nil
 }
 
-// ImportSystem the system given by merging the base system given by `systempath`
+// ImportSystem the system given by merging the base system given by `systemPath`
 // and the extra files given by each of the `extraPaths`.
 func ImportSystem(t *testing.T, systemPath string, extraPaths ...string) {
 

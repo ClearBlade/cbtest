@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	HelloWorldService = "helloWorld"
+	AdderService = "adder"
 )
 
-func TestHelloWorld(t *testing.T) {
+func TestAdder(t *testing.T) {
 
 	// import into new system
 	system := cbtest.ImportSystem(t, "./extra")
@@ -24,10 +24,13 @@ func TestHelloWorld(t *testing.T) {
 	// obtain developer client from the ephemeral system
 	devClient := cbtest.LoginAsDev(t, system)
 
+	// payload that we will send to the adder service
+	payload := map[string]interface{}{"lhs": 3, "rhs": 4}
+
 	// call the serice
-	resp, err := devClient.CallService(system.SystemKey(), HelloWorldService, map[string]interface{}{}, false)
+	resp, err := devClient.CallService(system.SystemKey(), AdderService, payload, false)
 	require.NoError(t, err)
 
 	// assert response from service
-	cbassert.ServiceResponseEqual(t, "Hello, world!", resp)
+	cbassert.ServiceResponseEqual(t, 7.0, resp)
 }

@@ -6,10 +6,12 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
 	cb "github.com/clearblade/Go-SDK"
+	"github.com/clearblade/cblib"
 )
 
 // checkSystem returns true if the given path contains a system.
@@ -80,7 +82,6 @@ func ImportSystemWithConfigE(t *testing.T, config *Config, systemPath string, ex
 		return nil, err
 	}
 
-	// TODO: better name and description
 	system := NewImportedSystem("", config, tempdir)
 
 	t.Log("Registering developer...")
@@ -90,14 +91,19 @@ func ImportSystemWithConfigE(t *testing.T, config *Config, systemPath string, ex
 	}
 
 	t.Log("Importing system into platform...")
-	cbImportSystem(t, system)
-	// TODO
-	return nil, nil
+	_, err = cbImportSystem(t, system)
+	if err != nil {
+		return nil, err
+	}
+
+	return system, nil
 }
 
 // cbRegisterDeveloper registers a new developer in the system if it doesn't
 // exists already.
 func cbRegisterDeveloper(t *testing.T, system *EphemeralSystem) error {
+
+	devClient := cb.NewDevClientWithAddrs(system.PlatformURL(), system.MessagingURL(), "", "")
 
 	email := system.config.Developer.Email
 	password := system.config.Developer.Password
@@ -105,8 +111,6 @@ func cbRegisterDeveloper(t *testing.T, system *EphemeralSystem) error {
 	lastname := "cbtest"
 	org := "ClearBlade, Inc."
 	regkey := system.config.RegistrationKey
-
-	devClient := cb.NewDevClient("", "")
 
 	_, err := devClient.RegisterDevUserWithKey(email, password, firstname, lastname, org, regkey)
 	if err != nil && !strings.Contains(err.Error(), "already exists") {
@@ -122,20 +126,31 @@ func cbRegisterDeveloper(t *testing.T, system *EphemeralSystem) error {
 // Returns stdout/stderr and error on failure.
 func cbImportSystem(t *testing.T, system *EphemeralSystem) (string, error) {
 
-	// devClient, err := LoginAsDevE(t, system)
-	// if err != nil {
-	// 	return "", err
-	// }
+	importConfig := cbImportConfig(t, system)
 
-	// result, err := cblib.ImportSystemUsingConfig(importConfig, system.LocalPath(), devClient)
-	// if err != nil {
-	// 	return "", err
-	// }
-	// system.config.SystemKey = result.SystemKey
-	// system.config.SystemSecret = result.SystemSecret
+	devClient, err := LoginAsDevE(t, system)
+	if err != nil {
+		return "", err
+	}
 
+	result, err := cblib.ImportSystemUsingConfig(importConfig, system.LocalPath(), devClient)
+	if err != nil {
+		return "", err
+	}
+
+	system.config.SystemKey = result.SystemKey
+	system.config.SystemSecret = result.SystemSecret
 	return "", nil
+}
 
+// cbImportConfig returns a cblib.ImportConfig instance for importing the system.
+func cbImportConfig(t *testing.T, system *EphemeralSystem) cblib.ImportConfig {
+	return cblib.ImportConfig{
+		SystemName:        t.Name(),
+		SystemDescription: fmt.Sprintf("Created on %s", time.Now()),
+		ImportUsers:       ShouldImportUsers(),
+		ImportRows:        ShouldImportRows(),
+	}
 }
 
 // UseSystem uses the external (not managed by cbtest) system given

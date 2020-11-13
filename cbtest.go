@@ -15,6 +15,8 @@ var (
 	flagDevPassword  *string
 	flagUserEmail    *string
 	flagUserPassword *string
+	flagImportUsers  *bool
+	flagImportRows   *bool
 	flagKeep         *bool
 )
 
@@ -30,6 +32,8 @@ func init() {
 	flagDevPassword = flag.String("cbtest.dev-password", "", "Developer password to use")
 	flagUserEmail = flag.String("cbtest.user-email", "", "User email to use")
 	flagUserPassword = flag.String("cbtest.user-password", "", "User password to use")
+	flagImportUsers = flag.Bool("cbtest.import-users", true, "Whenever users should be imported")
+	flagImportRows = flag.Bool("cbtest.import-rows", true, "Whenever rows should be imported")
 	flagKeep = flag.Bool("cbtest.keep", false, "Keep systems that were created by cbtest (external systems are never destroyed)")
 }
 
@@ -157,6 +161,34 @@ func UserPassword() string {
 	}
 
 	return *flagUserPassword
+}
+
+// ShouldImportUsers returns the value given to the `-cbtest.import-users` flag.
+func ShouldImportUsers() bool {
+
+	if flagImportUsers == nil {
+		panic("ShouldImportUsers called before init")
+	}
+
+	if !flag.Parsed() {
+		panic("ShouldImportUsers called before flag.Parse")
+	}
+
+	return *flagImportUsers
+}
+
+// ShouldImportRows returns the value given to the `-cbtest.import-users` flag.
+func ShouldImportRows() bool {
+
+	if flagImportRows == nil {
+		panic("ShouldImportRows called before init")
+	}
+
+	if !flag.Parsed() {
+		panic("ShouldImportRows called before flag.Parse")
+	}
+
+	return *flagImportRows
 }
 
 // ShouldKeepSystem returns the value given to the `-cbtest.keep` flag.

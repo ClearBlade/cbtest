@@ -9,7 +9,7 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/clearblade/cbtest)](https://goreportcard.com/report/github.com/clearblade/cbtest)
 ![GitHub last commit](https://img.shields.io/github/last-commit/clearblade/cbtest)
-![GitHub license](https://img.shields.io/github/license/clearblade/cbtest)
+[![GitHub license](https://img.shields.io/github/license/clearblade/cbtest)](LICENSE)
 
 `cbtest` is Go library that makes it easy to write automated tests against your
 [ClearBlade][clearblade] systems. It provides the following features:

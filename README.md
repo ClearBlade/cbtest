@@ -26,10 +26,15 @@
 
 ## Examples
 
-Check the [examples/](examples/) folder for reference.
+They are located under the [examples/](examples/) folder. You can run any of
+them like follows:
+
+```bash
+go test -v ./examples/[EXAMPLE FOLDER]
+```
 
 ## Similar tools
 
 [terratest]: https://github.com/gruntwork-io/terratest
 
-`cbtest` was inpired by [Terratest][terratest].
+- `cbtest` was inpired by [Terratest][terratest].

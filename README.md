@@ -3,7 +3,7 @@
 [go-testing]: https://golang.org/pkg/testing/
 [clearblade-go-sdk]: https://github.com/clearblade/Go-SDK
 
-**Disclaimer**: this project is currently a pet project by [danielrs][danielrs].
+**Disclaimer**: `cbtest` is currently a pet project by [danielrs][danielrs].
 
 # cbtest
 

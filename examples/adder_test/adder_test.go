@@ -1,4 +1,5 @@
-package hello_world_test
+// Package adder_test showcases a test that passes parameters to a code service.
+package adder_test
 
 import (
 	"testing"

@@ -1,3 +1,4 @@
+// Package hello_world_test showcases a test expects a response from a service.
 package hello_world_test
 
 import (

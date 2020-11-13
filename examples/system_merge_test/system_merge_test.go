@@ -1,4 +1,6 @@
-package hello_world_test
+// Package system_merge_test shows how to test against a system created from merging
+// multiple systems together (foo_extra and bar_extra).
+package system_merge_test
 
 import (
 	"testing"

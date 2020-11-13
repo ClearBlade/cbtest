@@ -127,6 +127,7 @@ func TestMergeFoldersWithSingleNestedSourceSucceeds(t *testing.T) {
 
 	expected := []string{
 		tempdir,
+		fmt.Sprintf("%s/README.md", tempdir),
 		fmt.Sprintf("%s/bar", tempdir),
 		fmt.Sprintf("%s/bar/bar.txt", tempdir),
 		fmt.Sprintf("%s/baz", tempdir),

@@ -82,12 +82,14 @@ func ReadConfig(r io.Reader) (*Config, error) {
 }
 
 func (c *Config) overrideFromFlags() {
-	c.PlatformURL = useOrDefault(*flagPlatformURL, c.PlatformURL)
-	c.MessagingURL = useOrDefault(*flagMessagingURL, c.MessagingURL)
-	c.Developer.Email = useOrDefault(*flagDevEmail, c.Developer.Email)
-	c.Developer.Password = useOrDefault(*flagDevPassword, c.Developer.Password)
-	c.User.Email = useOrDefault(*flagUserEmail, c.User.Email)
-	c.User.Password = useOrDefault(*flagUserPassword, c.User.Password)
+	c.PlatformURL = useOrDefault(PlatformURL(), c.PlatformURL)
+	c.MessagingURL = useOrDefault(MessagingURL(), c.MessagingURL)
+	c.SystemKey = useOrDefault(SystemKey(), c.SystemKey)
+	c.SystemSecret = useOrDefault(SystemSecret(), c.SystemSecret)
+	c.Developer.Email = useOrDefault(DeveloperEmail(), c.Developer.Email)
+	c.Developer.Password = useOrDefault(DeveloperPassword(), c.Developer.Password)
+	c.User.Email = useOrDefault(UserEmail(), c.User.Email)
+	c.User.Password = useOrDefault(UserPassword(), c.User.Password)
 }
 
 // HasSystem returns true if the given config has system information.

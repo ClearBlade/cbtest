@@ -6,26 +6,27 @@ import (
 
 var (
 	// Flags, registered during init.
-	flagConfig       *string
-	flagPlatformURL  *string
-	flagMessagingURL *string
-	flagSystemKey    *string
-	flagSystemSecret *string
-	flagDevEmail     *string
-	flagDevPassword  *string
-	flagUserEmail    *string
-	flagUserPassword *string
-	flagImportUsers  *bool
-	flagImportRows   *bool
-	flagKeep         *bool
+	flagConfig          *string
+	flagPlatformURL     *string
+	flagMessagingURL    *string
+	flagRegistrationKey *string
+	flagSystemKey       *string
+	flagSystemSecret    *string
+	flagDevEmail        *string
+	flagDevPassword     *string
+	flagUserEmail       *string
+	flagUserPassword    *string
+	flagImportUsers     *bool
+	flagImportRows      *bool
 )
 
 // init registers our flags.
 func init() {
 	// NOTE: reminder that flag.Parse will be called by `go test`, so we don't need to call it here.
-	flagConfig = flag.String("cbtest.config", "cbtest.yml", "Path to the config file to use (credentials mostly)")
+	flagConfig = flag.String("cbtest.config", "cbtest.json", "Path to the config file to use (credentials mostly)")
 	flagPlatformURL = flag.String("cbtest.platform-url", "", "Platform URL to use")
 	flagMessagingURL = flag.String("cbtest.messaging-url", "", "Messaging URL to use")
+	flagRegistrationKey = flag.String("cbtest.registration-key", "", "Registration key to use when creating developers")
 	flagSystemKey = flag.String("cbtest.system-key", "", "System key to use")
 	flagSystemSecret = flag.String("cbtest.system-secret", "", "System secret to use")
 	flagDevEmail = flag.String("cbtest.dev-email", "", "Developer email to use")
@@ -34,7 +35,24 @@ func init() {
 	flagUserPassword = flag.String("cbtest.user-password", "", "User password to use")
 	flagImportUsers = flag.Bool("cbtest.import-users", true, "Whenever users should be imported")
 	flagImportRows = flag.Bool("cbtest.import-rows", true, "Whenever rows should be imported")
-	flagKeep = flag.Bool("cbtest.keep", false, "Keep systems that were created by cbtest (external systems are never destroyed)")
+}
+
+// FlagFound returns true if the flag with the given name was explicitly passed.
+func FlagFound(name string) bool {
+
+	if !flag.Parsed() {
+		panic("FlagFound called before flag.Parse")
+	}
+
+	found := false
+
+	flag.Visit(func(flag *flag.Flag) {
+		if flag.Name == name {
+			found = true
+		}
+	})
+
+	return found
 }
 
 // ConfigPath returns the value given to the `-cbtest.config` flag.
@@ -49,6 +67,11 @@ func ConfigPath() string {
 	}
 
 	return *flagConfig
+}
+
+// HasConfig returns true if a config path was provided.
+func HasConfig() bool {
+	return FlagFound("cbtest.config") || IsFile(ConfigPath())
 }
 
 // PlatformURL returns the value given to the `-cbtest.platform-url` flag.
@@ -77,6 +100,20 @@ func MessagingURL() string {
 	}
 
 	return *flagMessagingURL
+}
+
+// RegistrationKey returns the value given to the `-cbtest.registration-key` flag.
+func RegistrationKey() string {
+
+	if flagRegistrationKey == nil {
+		panic("RegistrationKey called before init")
+	}
+
+	if !flag.Parsed() {
+		panic("RegistrationKey called before flag.Parse")
+	}
+
+	return *flagRegistrationKey
 }
 
 // SystemKey returns the value given to the `-cbtest.system-key` flag.
@@ -177,7 +214,7 @@ func ShouldImportUsers() bool {
 	return *flagImportUsers
 }
 
-// ShouldImportRows returns the value given to the `-cbtest.import-users` flag.
+// ShouldImportRows returns the value given to the `-cbtest.import-rows` flag.
 func ShouldImportRows() bool {
 
 	if flagImportRows == nil {
@@ -189,18 +226,4 @@ func ShouldImportRows() bool {
 	}
 
 	return *flagImportRows
-}
-
-// ShouldKeepSystem returns the value given to the `-cbtest.keep` flag.
-func ShouldKeepSystem() bool {
-
-	if flagKeep == nil {
-		panic("ShouldKeepSystem called before init")
-	}
-
-	if !flag.Parsed() {
-		panic("ShouldKeepSystem called before flag.Parse")
-	}
-
-	return *flagKeep
 }

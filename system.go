@@ -4,27 +4,32 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+
+	"golang.org/x/sync/errgroup"
 )
 
 // EphemeralSystem represents a system that exists solely for testing.
 type EphemeralSystem struct {
-	config    *Config
-	localPath string
+	config     *Config
+	localPath  string
+	isExternal bool
 }
 
 // NewImportedSystem creates a new *EphemeralSystem from an imported system.
-func NewImportedSystem(name string, config *Config, localPath string) *EphemeralSystem {
+func NewImportedSystem(config *Config, localPath string) *EphemeralSystem {
 	return &EphemeralSystem{
-		config:    config,
-		localPath: localPath,
+		config:     config,
+		localPath:  localPath,
+		isExternal: false,
 	}
 }
 
 // NewExternalSystem creates anew *EphemeralSystem from an external system.
 func NewExternalSystem(config *Config) *EphemeralSystem {
 	return &EphemeralSystem{
-		config:    config,
-		localPath: "<external>",
+		config:     config,
+		localPath:  "",
+		isExternal: true,
 	}
 }
 
@@ -50,7 +55,15 @@ func (es *EphemeralSystem) SystemSecret() string {
 
 // LocalPath returns the path where the local system is located.
 func (es *EphemeralSystem) LocalPath() string {
+	if es.IsExternal() {
+		return "<external>"
+	}
 	return es.localPath
+}
+
+// IsExternal returns if the ephemeral system is an external one.
+func (es *EphemeralSystem) IsExternal() bool {
+	return es.isExternal
 }
 
 // RemoteURL returns the URL where the remote system is running.
@@ -65,6 +78,24 @@ func (es *EphemeralSystem) RemoteURL() string {
 
 // Destroy destroys the remote system instance, as well as the local folder.
 func (es *EphemeralSystem) Destroy() error {
-	err := os.RemoveAll(es.localPath)
-	return err
+
+	if es.IsExternal() {
+		return nil
+	}
+
+	g := errgroup.Group{}
+
+	g.Go(func() error {
+		return os.RemoveAll(es.localPath)
+	})
+
+	g.Go(func() error {
+		devClient, err := doLoginAsDev(es)
+		if err != nil {
+			return err
+		}
+		return devClient.DeleteSystem(es.SystemKey())
+	})
+
+	return g.Wait()
 }

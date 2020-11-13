@@ -10,6 +10,30 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestIsDirSucceeds(t *testing.T) {
+	assert.True(t, IsDir("golden"))
+
+	assert.True(t, IsDir("golden/foo"))
+	assert.True(t, IsDir("golden/bar"))
+	assert.True(t, IsDir("golden/baz"))
+
+	assert.False(t, IsDir("golden/foo/foo.txt"))
+	assert.False(t, IsDir("golden/bar/bar.txt"))
+	assert.False(t, IsDir("golden/baz/baz.txt"))
+}
+
+func TestIsFileSucceeds(t *testing.T) {
+	assert.False(t, IsFile("golden"))
+
+	assert.False(t, IsFile("golden/foo"))
+	assert.False(t, IsFile("golden/bar"))
+	assert.False(t, IsFile("golden/baz"))
+
+	assert.True(t, IsFile("golden/foo/foo.txt"))
+	assert.True(t, IsFile("golden/bar/bar.txt"))
+	assert.True(t, IsFile("golden/baz/baz.txt"))
+}
+
 func listFiles(path string) []string {
 
 	files := make([]string, 0)

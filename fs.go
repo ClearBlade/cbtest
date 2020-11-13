@@ -26,6 +26,17 @@ func IsDir(path string) bool {
 	return info.IsDir()
 }
 
+// IsFile returns true if the path is a file.
+func IsFile(path string) bool {
+
+	info, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+
+	return !info.IsDir()
+}
+
 // MakeTempDir returns a new temporary directory.
 func MakeTempDir() (string, func()) {
 

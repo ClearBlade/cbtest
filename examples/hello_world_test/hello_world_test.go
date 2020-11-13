@@ -25,7 +25,7 @@ func TestHelloWorld(t *testing.T) {
 	devClient := cbtest.LoginAsDev(t, system)
 
 	// call the serice
-	resp, err := devClient.CallService(system.SystemKey(), HelloWorldService, map[string]interface{}{}, false)
+	resp, err := devClient.CallService(system.SystemKey(), HelloWorldService, nil, false)
 	require.NoError(t, err)
 
 	// assert response from service

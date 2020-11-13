@@ -34,8 +34,10 @@ them like follows:
 go test -v ./examples/[EXAMPLE FOLDER]
 ```
 
-## Similar tools
+## References
 
+[advanced-testing-in-go]: https://about.sourcegraph.com/go/advanced-testing-in-go/
 [terratest]: https://github.com/gruntwork-io/terratest
 
 - `cbtest` was inpired by [Terratest][terratest].
+- `cbtest` uses many ideas from [Advanced Testing in Go][advanced-testing-in-go].

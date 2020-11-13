@@ -8,6 +8,7 @@
 # cbtest
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/clearblade/cbtest)](https://goreportcard.com/report/github.com/clearblade/cbtest)
+[![Test status](https://github.com/clearblade/cbtest/workflows/tests/badge.svg?branch=master "test status")](https://github.com/clearblade/cbtest/actions)
 ![GitHub last commit](https://img.shields.io/github/last-commit/clearblade/cbtest)
 [![GitHub license](https://img.shields.io/github/license/clearblade/cbtest)](LICENSE)
 

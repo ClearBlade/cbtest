@@ -1,4 +1,4 @@
-name: Go
+name: tests
 
 on:
   push:
@@ -29,8 +29,6 @@ jobs:
             dep ensure
         fi
 
-    - name: Build
-      run: go build -v $(go list ./... | grep -v examples)
-
     - name: Test
       run: go test -v $(go list ./... | grep -v examples)
+

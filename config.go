@@ -6,18 +6,23 @@ import (
 	"os"
 )
 
+func useOrDefault(value, fallback string) string {
+	if len(value) > 0 {
+		return value
+	}
+	return fallback
+}
+
 // Config contains information about the system that is gonna be used for
 // testing.
 type Config struct {
-	PlatformURL       string     `json:"platformUrl" mapstructure:"platformUrl"`
-	MessagingURL      string     `json:"messagingUrl" mapstructure:"messagingUrl"`
-	RegistrationKey   string     `json:"registrationKey,omitempty" mapstructure:"registrationKey"`
-	SystemName        string     `json:"systemName,omitempty" mapstructure:"systemName"`
-	SystemDescription string     `json:"systemDescription,omitempty" mapstructure:"systemDescription"`
-	SystemKey         string     `json:"systemKey,omitempty" mapstructure:"systemKey"`
-	SystemSecret      string     `json:"systemSecret,omitempty" mapstructure:"systemSecret"`
-	Developer         *Developer `json:"developer,omitempty" mapstructure:"developer"`
-	User              *User      `json:"user,omitempty" mapstructre:"user"`
+	PlatformURL     string     `json:"platformUrl" mapstructure:"platformUrl"`
+	MessagingURL    string     `json:"messagingUrl" mapstructure:"messagingUrl"`
+	RegistrationKey string     `json:"registrationKey,omitempty" mapstructure:"registrationKey"`
+	SystemKey       string     `json:"systemKey,omitempty" mapstructure:"systemKey"`
+	SystemSecret    string     `json:"systemSecret,omitempty" mapstructure:"systemSecret"`
+	Developer       *Developer `json:"developer,omitempty" mapstructure:"developer"`
+	User            *User      `json:"user,omitempty" mapstructre:"user"`
 }
 
 // Developer contains the developer credentials that must be provided if using
@@ -36,13 +41,11 @@ type User struct {
 // GetDefaultConfig returns a new *Config instance with default values.
 func GetDefaultConfig() *Config {
 	return &Config{
-		PlatformURL:       "https://dev.clearblade.com",
-		MessagingURL:      "dev.clearblade.com:1883",
-		RegistrationKey:   "",
-		SystemName:        "cbtest",
-		SystemKey:         "",
-		SystemSecret:      "",
-		SystemDescription: "",
+		PlatformURL:     "https://dev.clearblade.com",
+		MessagingURL:    "dev.clearblade.com:1883",
+		RegistrationKey: "",
+		SystemKey:       "",
+		SystemSecret:    "",
 		Developer: &Developer{
 			Email:    "cbtest@email.com",
 			Password: "cbtestpassword",
@@ -74,7 +77,17 @@ func ReadConfig(r io.Reader) (*Config, error) {
 		return nil, err
 	}
 
+	config.overrideFromFlags()
 	return config, err
+}
+
+func (c *Config) overrideFromFlags() {
+	c.PlatformURL = useOrDefault(*flagPlatformURL, c.PlatformURL)
+	c.MessagingURL = useOrDefault(*flagMessagingURL, c.MessagingURL)
+	c.Developer.Email = useOrDefault(*flagDevEmail, c.Developer.Email)
+	c.Developer.Password = useOrDefault(*flagDevPassword, c.Developer.Password)
+	c.User.Email = useOrDefault(*flagUserEmail, c.User.Email)
+	c.User.Password = useOrDefault(*flagUserPassword, c.User.Password)
 }
 
 // HasSystem returns true if the given config has system information.

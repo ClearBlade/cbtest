@@ -8,6 +8,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestUseOrDefaultSucceeds(t *testing.T) {
+	assert.Equal(t, "foo", useOrDefault("foo", "bar"))
+	assert.Equal(t, "bar", useOrDefault("", "bar"))
+}
+
 func TestReadConfigCamelCaseFieldSucceeds(t *testing.T) {
 
 	rawConfig := `{ "platformUrl": "foo.bar.baz" }`

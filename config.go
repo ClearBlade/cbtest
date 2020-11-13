@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// useOrDefault returns `value` if not empty, otherwise it returns `fallback`.
 func useOrDefault(value, fallback string) string {
 	if len(value) > 0 {
 		return value

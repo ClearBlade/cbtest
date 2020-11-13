@@ -92,7 +92,7 @@ func ReadConfig(r io.Reader) (*Config, error) {
 
 // ObtainConfig returns the config that is gonna be used by cbtest. It uses
 // either (1) default config, or (2) config read from the config path flag.
-// Final values in the config are overriden by those provided in the flags.
+// Final values in the config are overridden by those provided in the flags.
 func ObtainConfig() (*Config, error) {
 
 	var err error

@@ -12,7 +12,7 @@ type Destroyer interface {
 	Destroy() error
 }
 
-// Destroy destroyes the given destroyer, and fails the test if any error is
+// Destroy destroys the given destroyer, and fails the test if any error is
 // returned.
 func Destroy(t *testing.T, destroyer Destroyer) {
 	err := destroyer.Destroy()

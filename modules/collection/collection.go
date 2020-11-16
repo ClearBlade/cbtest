@@ -2,17 +2,17 @@ package collection
 
 import (
 	"fmt"
-	"testing"
 
 	"github.com/stretchr/testify/require"
 
 	cb "github.com/clearblade/Go-SDK"
+	"github.com/clearblade/cbtest"
 	"github.com/clearblade/cbtest/modules/system"
 )
 
 // IDByName gets a collection ID from a given name.
 // Panics on failure.
-func IDByName(t *testing.T, system *system.EphemeralSystem, devClient *cb.DevClient, collectionName string) string {
+func IDByName(t cbtest.T, system *system.EphemeralSystem, devClient *cb.DevClient, collectionName string) string {
 	id, err := IDByNameE(t, system, devClient, collectionName)
 	require.NoError(t, err)
 	return id
@@ -20,7 +20,7 @@ func IDByName(t *testing.T, system *system.EphemeralSystem, devClient *cb.DevCli
 
 // IDByNameE gets a collection ID from a given name.
 // Returns error on failure.
-func IDByNameE(t *testing.T, system *system.EphemeralSystem, devClient *cb.DevClient, collectionName string) (string, error) {
+func IDByNameE(t cbtest.T, system *system.EphemeralSystem, devClient *cb.DevClient, collectionName string) (string, error) {
 
 	allCollections, err := devClient.GetAllCollections(system.SystemKey())
 	if err != nil {

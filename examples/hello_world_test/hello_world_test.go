@@ -6,7 +6,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/clearblade/cbtest"
 	"github.com/clearblade/cbtest/modules/auth"
 	"github.com/clearblade/cbtest/modules/service"
 	"github.com/clearblade/cbtest/modules/system"
@@ -22,7 +21,7 @@ func TestHelloWorld(t *testing.T) {
 	s := system.ImportSystem(t, "./extra")
 
 	// destroy the system after the test
-	defer cbtest.Destroy(t, s)
+	defer system.Destroy(t, s)
 
 	// obtain developer client from the ephemeral system
 	devClient := auth.LoginAsDev(t, s)

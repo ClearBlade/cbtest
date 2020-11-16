@@ -58,7 +58,7 @@ func TestObtainConfigOverrides(t *testing.T) {
 	for _, tt := range tests {
 
 		reflect.ValueOf(tt.flag).Elem().Set(reflect.ValueOf(tt.want))
-		config, err := ObtainConfig()
+		config, err := ObtainConfig(t)
 		require.NoError(t, err)
 
 		value, err := lookup.LookupString(config, tt.cpath)

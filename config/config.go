@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/clearblade/cbtest"
 )
 
 // Provider defines an interface for a single function that provides a config.
@@ -109,18 +111,24 @@ func ReadConfig(r io.Reader) (*Config, error) {
 // ObtainConfig returns the config that is gonna be used by cbtest. It uses
 // either (1) default config, or (2) config read from the config path flag.
 // Final values in the config are overridden by those provided in the flags.
-func ObtainConfig() (*Config, error) {
+func ObtainConfig(t cbtest.T) (*Config, error) {
+	t.Helper()
 
+	var config *Config
 	var err error
 
-	config := GetDefaultConfig()
 	if HasConfig() {
+		t.Logf("Reading config from path: %s", ConfigPath())
 		config, err = ReadConfigFromPath(ConfigPath())
 		if err != nil {
 			return nil, fmt.Errorf("could not obtain config: %s", err)
 		}
+	} else {
+		t.Logf("Using default config")
+		config = GetDefaultConfig()
 	}
 
+	t.Logf("Overriding config from flags")
 	config.overrideFromFlags()
 	return config, nil
 }

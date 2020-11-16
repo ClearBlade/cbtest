@@ -95,11 +95,24 @@ func (es *EphemeralSystem) RemoteURL() string {
 
 // Destroy destroys the remote system instance, as well as the local folder.
 func (es *EphemeralSystem) Destroy(t *testing.T) error {
+	t.Helper()
 
 	if es.IsExternal() {
 		t.Log("External system not destroyed")
 		return nil
 	}
+
+	err := es.doDestroy(t)
+	if err != nil {
+		t.Logf("Error destroying system: %s", err)
+		return err
+	}
+
+	t.Logf("System was destroyed")
+	return nil
+}
+
+func (es *EphemeralSystem) doDestroy(t *testing.T) error {
 
 	g := errgroup.Group{}
 

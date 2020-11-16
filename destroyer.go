@@ -15,6 +15,7 @@ type Destroyer interface {
 // Destroy destroys the given destroyer, and fails the test if any error is
 // returned.
 func Destroy(t *testing.T, destroyer Destroyer) {
+	t.Helper()
 	err := destroyer.Destroy(t)
 	require.NoError(t, err)
 }

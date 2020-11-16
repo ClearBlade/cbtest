@@ -9,6 +9,7 @@ import (
 var (
 	// Flags, registered during init.
 	flagConfig          *string
+	flagConfigOut       *string
 	flagPlatformURL     *string
 	flagMessagingURL    *string
 	flagRegistrationKey *string
@@ -28,6 +29,7 @@ var (
 func init() {
 	// NOTE: reminder that flag.Parse will be called by `go test`, so we don't need to call it here.
 	flagConfig = flag.String("cbtest.config", "cbtest.json", "Path to the config file to use (credentials mostly)")
+	flagConfigOut = flag.String("cbtest.config-out", "", "Path to write the config to")
 	flagPlatformURL = flag.String("cbtest.platform-url", "", "Platform URL to use")
 	flagMessagingURL = flag.String("cbtest.messaging-url", "", "Messaging URL to use")
 	flagRegistrationKey = flag.String("cbtest.registration-key", "", "Registration key to use when creating developers")
@@ -78,6 +80,19 @@ func ConfigPath() string {
 // HasConfig returns true if a config path was provided.
 func HasConfig() bool {
 	return FlagFound("cbtest.config") || fsutil.IsFile(ConfigPath())
+}
+
+// ConfigOut returns the value given to the `-cbtest.config` flag.
+func ConfigOut() string {
+	if flagConfigOut == nil {
+		panic("ConfigOut called before init")
+	}
+
+	if !flag.Parsed() {
+		panic("ConfigOut called before flag.Parse")
+	}
+
+	return *flagConfigOut
 }
 
 // PlatformURL returns the value given to the `-cbtest.platform-url` flag.

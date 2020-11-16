@@ -788,6 +788,9 @@ MigrationBackup/
 
 ### CUSTOM ###
 
+# generated config files
+cbtest-*-[0-9]*.json
+
+# do not ignore golden and testdata node_modules
 !**/golden/**/node_modules/
 !**/testdata/**/node_modules/
-

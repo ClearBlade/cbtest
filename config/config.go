@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
+	"time"
 
 	"github.com/clearblade/cbtest"
 )
@@ -105,7 +107,29 @@ func ReadConfig(r io.Reader) (*Config, error) {
 		return nil, err
 	}
 
-	return config, err
+	return config, nil
+}
+
+// WriteConfigToPath writes the config to the given path.
+func WriteConfigToPath(path string, c *Config) error {
+
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+
+	return WriteConfig(f, c)
+}
+
+// WriteConfig writes the config to the given writer.
+func WriteConfig(w io.Writer, c *Config) error {
+
+	err := json.NewEncoder(w).Encode(c)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // ObtainConfig returns the config that is gonna be used by cbtest. It uses
@@ -131,6 +155,28 @@ func ObtainConfig(t cbtest.T) (*Config, error) {
 	t.Logf("Overriding config from flags")
 	config.overrideFromFlags()
 	return config, nil
+}
+
+// SaveConfig saves the config to disk. It uses either (1) the config out flag
+// if provided, or (2) the default path given in the parameter.
+func SaveConfig(t cbtest.T, c *Config) error {
+	t.Helper()
+
+	var err error
+
+	outputPath := ConfigOut()
+	if strings.TrimSpace(outputPath) == "" {
+		timestamp := time.Now().UTC().Unix()
+		outputPath = fmt.Sprintf("cbtest-%s-%d.json", t.Name(), timestamp)
+	}
+
+	t.Logf("Saving config to: %s", outputPath)
+	err = WriteConfigToPath(outputPath, c)
+	if err != nil {
+		return fmt.Errorf("could not save config: %s", err)
+	}
+
+	return nil
 }
 
 func (c *Config) overrideFromFlags() {

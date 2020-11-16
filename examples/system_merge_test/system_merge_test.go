@@ -20,7 +20,7 @@ const (
 func TestSystemMerge(t *testing.T) {
 
 	// import into new system
-	s := system.ImportSystem(t, "./foo_extra", "./bar_extra")
+	s := system.Import(t, "./foo_extra", "./bar_extra")
 
 	// destroy the system after the test
 	defer system.Destroy(t, s)

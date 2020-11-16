@@ -28,20 +28,20 @@ func checkSystem(path string) error {
 	return nil
 }
 
-// ImportSystem imports the system given by merging the base system given by
+// Import imports the system given by merging the base system given by
 // `systemPath` and the extra files given by each of the `extraPaths`.
 // Panics on error.
-func ImportSystem(t cbtest.T, systemPath string, extraPaths ...string) *EphemeralSystem {
+func Import(t cbtest.T, systemPath string, extraPaths ...string) *EphemeralSystem {
 	t.Helper()
-	system, err := ImportSystemE(t, systemPath, extraPaths...)
+	system, err := ImportE(t, systemPath, extraPaths...)
 	require.NoError(t, err)
 	return system
 }
 
-// ImportSystemE imports the system given by merging the base system given by
+// ImportE imports the system given by merging the base system given by
 // `systemPath` and the extra files given by each of the `extraPaths`.
 // Returns an error on failure.
-func ImportSystemE(t cbtest.T, systemPath string, extraPaths ...string) (*EphemeralSystem, error) {
+func ImportE(t cbtest.T, systemPath string, extraPaths ...string) (*EphemeralSystem, error) {
 	t.Helper()
 
 	config, err := config.ObtainConfig(t)
@@ -49,26 +49,26 @@ func ImportSystemE(t cbtest.T, systemPath string, extraPaths ...string) (*Epheme
 		return nil, err
 	}
 
-	return ImportSystemWithConfigE(t, config, systemPath, extraPaths...)
+	return ImportWithConfigE(t, config, systemPath, extraPaths...)
 }
 
-// ImportSystemWithConfig imports the system given by merging the base system
+// ImportWithConfig imports the system given by merging the base system
 // given by `systemPath` and the extra files given by each of the `extraPaths`
 // into the platform instance given by the config.
 // Panics on error.
-func ImportSystemWithConfig(t cbtest.T, config *config.Config, systemPath string, extraPaths ...string) *EphemeralSystem {
+func ImportWithConfig(t cbtest.T, config *config.Config, systemPath string, extraPaths ...string) *EphemeralSystem {
 	t.Helper()
 
-	system, err := ImportSystemWithConfigE(t, config, systemPath, extraPaths...)
+	system, err := ImportWithConfigE(t, config, systemPath, extraPaths...)
 	require.NoError(t, err)
 	return system
 }
 
-// ImportSystemWithConfigE imports the system given by merging the base system
+// ImportWithConfigE imports the system given by merging the base system
 // given by `systemPath` and the extra files given by each of the `extraPaths`
 // into the platform instance given by the config.
 // Returns error on failure.
-func ImportSystemWithConfigE(t cbtest.T, config *config.Config, systemPath string, extraPaths ...string) (*EphemeralSystem, error) {
+func ImportWithConfigE(t cbtest.T, config *config.Config, systemPath string, extraPaths ...string) (*EphemeralSystem, error) {
 	t.Helper()
 
 	var err error
@@ -145,53 +145,11 @@ func cbImportConfig(t cbtest.T, system *EphemeralSystem) cblib.ImportConfig {
 	nowstr := time.Now().UTC().Format(time.UnixDate)
 
 	return cblib.ImportConfig{
-		SystemName:        name,
-		SystemDescription: fmt.Sprintf("Created on %s", nowstr),
-		ImportUsers:       system.config.Import.ImportUsers,
-		ImportRows:        system.config.Import.ImportRows,
+		SystemName:             name,
+		SystemDescription:      fmt.Sprintf("Created on %s", nowstr),
+		ImportUsers:            system.config.Import.ImportUsers,
+		ImportRows:             system.config.Import.ImportRows,
+		DefaultUserPassword:    system.config.User.Password,
+		DefaultDeviceActiveKey: system.config.Device.ActiveKey,
 	}
-}
-
-// UseSystem uses the external (not managed by cbtest) system given
-// by the config flag. External systems are never destroyed automatically.
-// Panics on failure.
-func UseSystem(t cbtest.T) *EphemeralSystem {
-	t.Helper()
-	system, err := UseSystemE(t)
-	require.NoError(t, err)
-	return system
-}
-
-// UseSystemE uses the external (not managed by cbtest) system given
-// by the config flag. External systems are never destroyed automatically.
-// Returns error on failure.
-func UseSystemE(t cbtest.T) (*EphemeralSystem, error) {
-	t.Helper()
-
-	config, err := config.ObtainConfig(t)
-	if err != nil {
-		return nil, err
-	}
-
-	return UseSystemWithConfigE(t, config)
-}
-
-// UseSystemWithConfig uses the external (not managed by cbtest) system given
-// by the config. External systems are never destroyed automatically.
-// Panics on error.
-func UseSystemWithConfig(t cbtest.T, config *config.Config) *EphemeralSystem {
-	t.Helper()
-	system, err := UseSystemWithConfigE(t, config)
-	require.NoError(t, err)
-	return system
-}
-
-// UseSystemWithConfigE uses the external (not managed by cbtest) system given
-// by the config. External systems are never destroyed automatically.
-// Returns error on failure.
-func UseSystemWithConfigE(t cbtest.T, config *config.Config) (*EphemeralSystem, error) {
-	t.Helper()
-	system := NewExternalSystem(config)
-	t.Logf("System URL: %s", system.RemoteURL())
-	return system, nil
 }

@@ -30,7 +30,7 @@ func TestCollection(t *testing.T) {
 	}
 
 	// import into new system
-	s := system.ImportSystem(t, "./extra")
+	s := system.Import(t, "./extra")
 
 	// destroy the system after the test
 	defer system.Destroy(t, s)

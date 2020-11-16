@@ -789,4 +789,5 @@ MigrationBackup/
 ### CUSTOM ###
 
 !**/golden/**/node_modules/
+!**/testdata/**/node_modules/
 

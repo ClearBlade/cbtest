@@ -11,27 +11,27 @@ import (
 )
 
 func TestIsDirSucceeds(t *testing.T) {
-	assert.True(t, IsDir("golden"))
+	assert.True(t, IsDir("testdata"))
 
-	assert.True(t, IsDir("golden/foo"))
-	assert.True(t, IsDir("golden/bar"))
-	assert.True(t, IsDir("golden/baz"))
+	assert.True(t, IsDir("testdata/foo"))
+	assert.True(t, IsDir("testdata/bar"))
+	assert.True(t, IsDir("testdata/baz"))
 
-	assert.False(t, IsDir("golden/foo/foo.txt"))
-	assert.False(t, IsDir("golden/bar/bar.txt"))
-	assert.False(t, IsDir("golden/baz/baz.txt"))
+	assert.False(t, IsDir("testdata/foo/foo.txt"))
+	assert.False(t, IsDir("testdata/bar/bar.txt"))
+	assert.False(t, IsDir("testdata/baz/baz.txt"))
 }
 
 func TestIsFileSucceeds(t *testing.T) {
-	assert.False(t, IsFile("golden"))
+	assert.False(t, IsFile("testdata"))
 
-	assert.False(t, IsFile("golden/foo"))
-	assert.False(t, IsFile("golden/bar"))
-	assert.False(t, IsFile("golden/baz"))
+	assert.False(t, IsFile("testdata/foo"))
+	assert.False(t, IsFile("testdata/bar"))
+	assert.False(t, IsFile("testdata/baz"))
 
-	assert.True(t, IsFile("golden/foo/foo.txt"))
-	assert.True(t, IsFile("golden/bar/bar.txt"))
-	assert.True(t, IsFile("golden/baz/baz.txt"))
+	assert.True(t, IsFile("testdata/foo/foo.txt"))
+	assert.True(t, IsFile("testdata/bar/bar.txt"))
+	assert.True(t, IsFile("testdata/baz/baz.txt"))
 }
 
 func listFiles(path string) []string {
@@ -71,7 +71,7 @@ func TestMergeFoldersWithSingleSourceSucceeds(t *testing.T) {
 	tempdir, cleanup := MakeTempDir()
 	defer cleanup()
 
-	err := MergeFolders(tempdir, "golden/foo")
+	err := MergeFolders(tempdir, "testdata/foo")
 	require.NoError(t, err)
 
 	expected := []string{
@@ -87,7 +87,7 @@ func TestMergeFoldersWithTwoSourcesSucceeds(t *testing.T) {
 	tempdir, cleanup := MakeTempDir()
 	defer cleanup()
 
-	err := MergeFolders(tempdir, "golden/foo", "golden/bar")
+	err := MergeFolders(tempdir, "testdata/foo", "testdata/bar")
 	require.NoError(t, err)
 
 	expected := []string{
@@ -104,7 +104,7 @@ func TestMergeFoldersWithThreeSourcesSucceeds(t *testing.T) {
 	tempdir, cleanup := MakeTempDir()
 	defer cleanup()
 
-	err := MergeFolders(tempdir, "golden/foo", "golden/bar", "golden/baz")
+	err := MergeFolders(tempdir, "testdata/foo", "testdata/bar", "testdata/baz")
 	require.NoError(t, err)
 
 	expected := []string{
@@ -122,7 +122,7 @@ func TestMergeFoldersWithSingleNestedSourceSucceeds(t *testing.T) {
 	tempdir, cleanup := MakeTempDir()
 	defer cleanup()
 
-	err := MergeFolders(tempdir, "golden")
+	err := MergeFolders(tempdir, "testdata")
 	require.NoError(t, err)
 
 	expected := []string{

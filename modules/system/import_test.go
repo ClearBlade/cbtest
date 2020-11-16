@@ -7,11 +7,11 @@ import (
 )
 
 func TestCheckSystemValidSystemSucceeds(t *testing.T) {
-	err := checkSystem("golden/sys")
+	err := checkSystem("testdata/sys")
 	assert.NoError(t, err)
 }
 
 func TestCheckSystemNonSystemFails(t *testing.T) {
-	err := checkSystem("golden/nosys")
+	err := checkSystem("testdata/nosys")
 	assert.Error(t, err)
 }

@@ -3,19 +3,24 @@
     "name": "results",
     "schema": [
         {
-        "ColumnName": "item_id",
-        "ColumnType": "uuid",
-        "PK": true
+            "ColumnName": "item_id",
+            "ColumnType": "uuid",
+            "PK": true
         },
         {
-        "ColumnName": "lhs",
-        "ColumnType": "float",
-        "PK": false
+            "ColumnName": "lhs",
+            "ColumnType": "float",
+            "PK": false
         },
         {
-        "ColumnName": "rhs",
-        "ColumnType": "float",
-        "PK": false
+            "ColumnName": "rhs",
+            "ColumnType": "float",
+            "PK": false
+        },
+        {
+            "ColumnName": "result",
+            "ColumnType": "float",
+            "PK": false
         }
     ]
 }

@@ -48,6 +48,8 @@ func TestObtainConfigOverrides(t *testing.T) {
 		{flagDevPassword, "Developer.Password", "dev-password-override"},
 		{flagUserEmail, "User.Email", "user-email-override"},
 		{flagUserPassword, "User.Password", "user-password-override"},
+		{flagDeviceName, "Device.Name", "device-name-override"},
+		{flagDeviceActiveKey, "Device.ActiveKey", "device-active-key-override"},
 		{flagImportUsers, "Import.ImportUsers", false},
 		{flagImportRows, "Import.ImportRows", false},
 		// NOTE: add more flags to the test above this line

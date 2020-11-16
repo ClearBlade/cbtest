@@ -18,6 +18,8 @@ var (
 	flagDevPassword     *string
 	flagUserEmail       *string
 	flagUserPassword    *string
+	flagDeviceName      *string
+	flagDeviceActiveKey *string
 	flagImportUsers     *bool
 	flagImportRows      *bool
 )
@@ -35,6 +37,8 @@ func init() {
 	flagDevPassword = flag.String("cbtest.dev-password", "", "Developer password to use")
 	flagUserEmail = flag.String("cbtest.user-email", "", "User email to use")
 	flagUserPassword = flag.String("cbtest.user-password", "", "User password to use")
+	flagDeviceName = flag.String("cbtest.device-name", "", "Device name to use")
+	flagDeviceActiveKey = flag.String("cbtest.device-active-key", "", "Device active key to use")
 	flagImportUsers = flag.Bool("cbtest.import-users", true, "Whenever users should be imported")
 	flagImportRows = flag.Bool("cbtest.import-rows", true, "Whenever rows should be imported")
 }
@@ -200,6 +204,34 @@ func UserPassword() string {
 	}
 
 	return *flagUserPassword
+}
+
+// DeviceName returns the value given to the `-cbtest.device-name` flag.
+func DeviceName() string {
+
+	if flagDeviceName == nil {
+		panic("DeviceName called before init")
+	}
+
+	if !flag.Parsed() {
+		panic("DeviceName called before flag.Parse")
+	}
+
+	return *flagDeviceName
+}
+
+// DeviceActiveKey returns the value given to the `-cbtest.device-active-key` flag.
+func DeviceActiveKey() string {
+
+	if flagDeviceActiveKey == nil {
+		panic("DeviceActiveKey called before init")
+	}
+
+	if !flag.Parsed() {
+		panic("DeviceActiveKey called before flag.Parse")
+	}
+
+	return *flagDeviceActiveKey
 }
 
 // ShouldImportUsers returns the value given to the `-cbtest.import-users` flag.

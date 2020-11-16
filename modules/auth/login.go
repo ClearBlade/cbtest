@@ -111,3 +111,53 @@ func cbLoginUser(provider config.Provider, email, password string) (*cb.UserClie
 	return userClient, nil
 
 }
+
+// LoginAsDevice logs into the system as a Device (given by config).
+// Panics on failure.
+func LoginAsDevice(t *testing.T, provider config.Provider) *cb.DeviceClient {
+	t.Helper()
+	deviceClient, err := LoginAsDeviceE(t, provider)
+	require.NoError(t, err)
+	return deviceClient
+}
+
+// LoginAsDeviceE logs into the system as a Device (given by config).
+// Returns error on failure.
+func LoginAsDeviceE(t *testing.T, provider config.Provider) (*cb.DeviceClient, error) {
+	t.Helper()
+	config := provider.Provide()
+	return LoginDeviceE(t, provider, config.Device.Name, config.Device.ActiveKey)
+}
+
+// LoginDevice logs into the system as an Device.
+// Panics on error.
+func LoginDevice(t *testing.T, provider config.Provider, name, activeKey string) *cb.DeviceClient {
+	t.Helper()
+	deviceClient, err := LoginDeviceE(t, provider, name, activeKey)
+	require.NoError(t, err)
+	return deviceClient
+}
+
+// LoginDeviceE logs into the system as an Device.
+// Returns error on failure.
+func LoginDeviceE(t *testing.T, provider config.Provider, name, activeKey string) (*cb.DeviceClient, error) {
+	t.Helper()
+	return cbLoginDevice(provider, name, activeKey)
+}
+
+func cbLoginDevice(provider config.Provider, name, activeKey string) (*cb.DeviceClient, error) {
+
+	config := provider.Provide()
+
+	if !config.HasDevice() {
+		return nil, fmt.Errorf("config does not have device information")
+	}
+
+	deviceClient := cb.NewDeviceClientWithAddrs(config.PlatformURL, config.MessagingURL, config.SystemKey, config.SystemSecret, name, activeKey)
+	_, err := deviceClient.Authenticate()
+	if err != nil {
+		return nil, err
+	}
+
+	return deviceClient, nil
+}

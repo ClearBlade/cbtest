@@ -23,7 +23,7 @@ function adder(req,resp){
 
     var coll = ClearBlade.Collection({ collectionName: 'results' });
 
-    coll.create({ lhs, rhs }, function(err, data) {
+    coll.create({ lhs, rhs, result }, function(err, data) {
       if (err) {
         resp.error(data);
       } else {

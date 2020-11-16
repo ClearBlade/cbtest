@@ -3,12 +3,12 @@ package collection_test
 
 import (
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/clearblade/cbtest"
 	"github.com/clearblade/cbtest/modules/auth"
+	"github.com/clearblade/cbtest/modules/collection"
 	"github.com/clearblade/cbtest/modules/service"
 	"github.com/clearblade/cbtest/modules/system"
 )
@@ -37,16 +37,21 @@ func TestCollection(t *testing.T) {
 	defer cbtest.Destroy(t, s)
 
 	// obtain developer client from the ephemeral system
-	userClient := auth.LoginAsUser(t, s)
-	time.Sleep(time.Second * 2)
+	devClient := auth.LoginAsDev(t, s)
 
 	// calls all the required operations from table
 	for _, tt := range table {
 		payload := map[string]interface{}{"lhs": tt.lhs, "rhs": tt.rhs}
-		resp, err := userClient.CallService(s.SystemKey(), AdderService, payload)
+		resp, err := devClient.CallService(s.SystemKey(), AdderService, payload, false)
 		require.NoError(t, err)
 		service.AssertResponseEqual(t, tt.want, resp)
 	}
 
-	// TODO: collection check
+	// fetch all collection data
+	collID := collection.IDByName(t, s, devClient, ResultsCollection)
+	data, err := devClient.GetData(collID, nil)
+	require.NoError(t, err)
+
+	// assert on the collection data
+	collection.AssertHasLength(t, 3, data)
 }

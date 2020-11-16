@@ -80,7 +80,7 @@ func ImportSystemWithConfigE(t *testing.T, config *config.Config, systemPath str
 	}
 
 	// our imported system root will be at a temporary directory
-	tempdir, cleanup := fsutil.MakeTempDir()
+	tempdir, cleanupLocal := fsutil.MakeTempDir()
 	system := NewImportedSystem(config, tempdir)
 
 	// the system paths that are gonna be merged into the temporary directory
@@ -91,28 +91,21 @@ func ImportSystemWithConfigE(t *testing.T, config *config.Config, systemPath str
 	t.Log("Merging system folders...")
 	err = fsutil.MergeFolders(tempdir, merge...)
 	if err != nil {
-		cleanup()
-		return nil, err
-	}
-
-	t.Log("Importing system into platform...")
-	_, err = cbImportSystem(t, system)
-	if err != nil {
-		cleanup()
+		cleanupLocal()
 		return nil, err
 	}
 
 	t.Log("Registering developer...")
 	err = auth.RegisterDevE(t, system, config.Developer.Email, config.Developer.Password)
 	if err != nil {
-		cleanup()
+		cleanupLocal()
 		return nil, err
 	}
 
-	t.Log("Registering user...")
-	err = auth.RegisterUserE(t, system, config.User.Email, config.User.Password)
+	t.Log("Importing system into platform...")
+	_, err = cbImportSystem(t, system)
 	if err != nil {
-		cleanup()
+		cleanupLocal()
 		return nil, err
 	}
 

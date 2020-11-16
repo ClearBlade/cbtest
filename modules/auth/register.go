@@ -91,3 +91,44 @@ func cbRegisterUser(t *testing.T, provider config.Provider, email, password stri
 
 	return nil
 }
+
+// RegisterDevice registers the given device into the system.
+// Panics on failure.
+func RegisterDevice(t *testing.T, provider config.Provider, name, activeKey string) {
+	t.Helper()
+	err := RegisterDeviceE(t, provider, name, activeKey)
+	require.NoError(t, err)
+}
+
+// RegisterDeviceE registers the given device into the system.
+// Returns error on failure.
+func RegisterDeviceE(t *testing.T, provider config.Provider, name, activeKey string) error {
+	t.Helper()
+	err := cbRegisterDevice(t, provider, name, activeKey)
+	return err
+}
+
+// cbRegisterDevice registers a new device in the system if it doesn't exists already.
+func cbRegisterDevice(t *testing.T, provider config.Provider, name, activeKey string) error {
+	t.Helper()
+
+	devClient, err := LoginAsDevE(t, provider)
+	if err != nil {
+		return err
+	}
+
+	config := provider.Provide()
+
+	data := map[string]interface{}{"active_key": activeKey}
+	_, err = devClient.CreateDevice(config.SystemKey, name, data)
+	if err != nil && !strings.Contains(err.Error(), "already exists") {
+		return err
+	}
+
+	err = devClient.AddDeviceToRoles(config.SystemKey, name, []string{"Administrator"})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

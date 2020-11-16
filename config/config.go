@@ -30,6 +30,7 @@ type Config struct {
 	SystemSecret    string     `json:"systemSecret,omitempty" mapstructure:"systemSecret"`
 	Developer       *Developer `json:"developer,omitempty" mapstructure:"developer"`
 	User            *User      `json:"user,omitempty" mapstructre:"user"`
+	Device          *Device    `json:"device,omitempty" mapstructure:"device"`
 	Import          *Import    `json:"import,omitempty" mapstructure:"import"`
 }
 
@@ -44,6 +45,12 @@ type Developer struct {
 type User struct {
 	Email    string `json:"email" mapstructure:"email"`
 	Password string `json:"password" mapstructure:"password"`
+}
+
+// Device contains the credentials for a device in the system.
+type Device struct {
+	Name      string `json:"name" mapstructure:"name"`
+	ActiveKey string `json:"activeKey" mapstructure:"activeKey"`
 }
 
 // Import contains import configuration values.
@@ -67,6 +74,10 @@ func GetDefaultConfig() *Config {
 		User: &User{
 			Email:    "cbtest@email.com",
 			Password: "cbtestpassword",
+		},
+		Device: &Device{
+			Name:      "cbtest-device",
+			ActiveKey: "cbtestpassword",
 		},
 		Import: &Import{},
 	}
@@ -126,6 +137,8 @@ func (c *Config) overrideFromFlags() {
 	c.Developer.Password = useOrDefault(DeveloperPassword(), c.Developer.Password)
 	c.User.Email = useOrDefault(UserEmail(), c.User.Email)
 	c.User.Password = useOrDefault(UserPassword(), c.User.Password)
+	c.Device.Name = useOrDefault(DeviceName(), c.Device.Name)
+	c.Device.ActiveKey = useOrDefault(DeviceActiveKey(), c.Device.ActiveKey)
 
 	// NOTE: let the boolean flag decide the value
 	c.Import.ImportUsers = ShouldImportUsers()
@@ -150,4 +163,9 @@ func (c *Config) HasDeveloper() bool {
 // HasUser returns true if the given config has user information.
 func (c *Config) HasUser() bool {
 	return c.User != nil && c.User.Email != "" && c.User.Password != ""
+}
+
+// HasDevice returns true if the given config has device information.
+func (c *Config) HasDevice() bool {
+	return c.Device != nil && c.Device.Name != "" && c.Device.ActiveKey != ""
 }

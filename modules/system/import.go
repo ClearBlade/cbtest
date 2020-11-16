@@ -1,10 +1,9 @@
-package cbtest
+package system
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 	"time"
 
@@ -12,6 +11,9 @@ import (
 
 	cb "github.com/clearblade/Go-SDK"
 	"github.com/clearblade/cblib"
+
+	"github.com/clearblade/cbtest/config"
+	"github.com/clearblade/cbtest/internal/fsutil"
 )
 
 // checkSystem returns true if the given path contains a system.
@@ -41,7 +43,7 @@ func ImportSystem(t *testing.T, systemPath string, extraPaths ...string) *Epheme
 // Returns an error on failure.
 func ImportSystemE(t *testing.T, systemPath string, extraPaths ...string) (*EphemeralSystem, error) {
 
-	config, err := ObtainConfig()
+	config, err := config.ObtainConfig()
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +55,7 @@ func ImportSystemE(t *testing.T, systemPath string, extraPaths ...string) (*Ephe
 // given by `systemPath` and the extra files given by each of the `extraPaths`
 // into the platform instance given by the config.
 // Panics on error.
-func ImportSystemWithConfig(t *testing.T, config *Config, systemPath string, extraPaths ...string) *EphemeralSystem {
+func ImportSystemWithConfig(t *testing.T, config *config.Config, systemPath string, extraPaths ...string) *EphemeralSystem {
 	system, err := ImportSystemWithConfigE(t, config, systemPath, extraPaths...)
 	require.NoError(t, err)
 	return system
@@ -63,7 +65,7 @@ func ImportSystemWithConfig(t *testing.T, config *Config, systemPath string, ext
 // given by `systemPath` and the extra files given by each of the `extraPaths`
 // into the platform instance given by the config.
 // Returns error on failure.
-func ImportSystemWithConfigE(t *testing.T, config *Config, systemPath string, extraPaths ...string) (*EphemeralSystem, error) {
+func ImportSystemWithConfigE(t *testing.T, config *config.Config, systemPath string, extraPaths ...string) (*EphemeralSystem, error) {
 
 	var err error
 
@@ -73,7 +75,7 @@ func ImportSystemWithConfigE(t *testing.T, config *Config, systemPath string, ex
 	}
 
 	// our imported system root will be at a temporary directory
-	tempdir, cleanup := MakeTempDir()
+	tempdir, cleanup := fsutil.MakeTempDir()
 	system := NewImportedSystem(config, tempdir)
 
 	// the system paths that are gonna be merged into the temporary directory
@@ -82,14 +84,7 @@ func ImportSystemWithConfigE(t *testing.T, config *Config, systemPath string, ex
 	merge = append(merge, extraPaths...)
 
 	t.Log("Merging system folders...")
-	err = MergeFolders(tempdir, merge...)
-	if err != nil {
-		cleanup()
-		return nil, err
-	}
-
-	t.Log("Registering developer...")
-	err = cbRegisterDeveloper(t, system)
+	err = fsutil.MergeFolders(tempdir, merge...)
 	if err != nil {
 		cleanup()
 		return nil, err
@@ -104,27 +99,6 @@ func ImportSystemWithConfigE(t *testing.T, config *Config, systemPath string, ex
 
 	t.Logf("Import successful: %s", system.RemoteURL())
 	return system, nil
-}
-
-// cbRegisterDeveloper registers a new developer in the system if it doesn't
-// exists already.
-func cbRegisterDeveloper(t *testing.T, system *EphemeralSystem) error {
-
-	devClient := cb.NewDevClientWithAddrs(system.PlatformURL(), system.MessagingURL(), "", "")
-
-	email := system.config.Developer.Email
-	password := system.config.Developer.Password
-	firstname := "cbtest"
-	lastname := "cbtest"
-	org := "ClearBlade, Inc."
-	regkey := system.config.RegistrationKey
-
-	_, err := devClient.RegisterDevUserWithKey(email, password, firstname, lastname, org, regkey)
-	if err != nil && !strings.Contains(err.Error(), "already exists") {
-		return err
-	}
-
-	return nil
 }
 
 // cbImportSystem imports the given system into a remote platform instance. Note
@@ -178,7 +152,7 @@ func UseSystem(t *testing.T) *EphemeralSystem {
 // Returns error on failure.
 func UseSystemE(t *testing.T) (*EphemeralSystem, error) {
 
-	config, err := ObtainConfig()
+	config, err := config.ObtainConfig()
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +163,7 @@ func UseSystemE(t *testing.T) (*EphemeralSystem, error) {
 // UseSystemWithConfig uses the external (not managed by cbtest) system given
 // by the config. External systems are never destroyed automatically.
 // Panics on error.
-func UseSystemWithConfig(t *testing.T, config *Config) *EphemeralSystem {
+func UseSystemWithConfig(t *testing.T, config *config.Config) *EphemeralSystem {
 	system, err := UseSystemWithConfigE(t, config)
 	require.NoError(t, err)
 	return system
@@ -198,7 +172,7 @@ func UseSystemWithConfig(t *testing.T, config *Config) *EphemeralSystem {
 // UseSystemWithConfigE uses the external (not managed by cbtest) system given
 // by the config. External systems are never destroyed automatically.
 // Returns error on failure.
-func UseSystemWithConfigE(t *testing.T, config *Config) (*EphemeralSystem, error) {
+func UseSystemWithConfigE(t *testing.T, config *config.Config) (*EphemeralSystem, error) {
 	return NewExternalSystem(config), nil
 }
 
@@ -213,11 +187,18 @@ func LoginAsDev(t *testing.T, system *EphemeralSystem) *cb.DevClient {
 // LoginAsDevE logs into the System as a Developer (given by config).
 // Returns error on failure.
 func LoginAsDevE(t *testing.T, system *EphemeralSystem) (*cb.DevClient, error) {
+
+	err := cbRegisterDeveloper(t, system)
+	if err != nil {
+		return nil, err
+	}
+
 	return doLoginAsDev(system)
 }
 
 func doLoginAsDev(system *EphemeralSystem) (*cb.DevClient, error) {
 
+	var err error
 	config := system.config
 
 	if !config.HasDeveloper() {
@@ -225,7 +206,7 @@ func doLoginAsDev(system *EphemeralSystem) (*cb.DevClient, error) {
 	}
 
 	devClient := cb.NewDevClientWithAddrs(config.PlatformURL, config.MessagingURL, config.Developer.Email, config.Developer.Password)
-	_, err := devClient.Authenticate()
+	_, err = devClient.Authenticate()
 	if err != nil {
 		return nil, err
 	}
@@ -244,6 +225,12 @@ func LoginAsUser(t *testing.T, system *EphemeralSystem) *cb.UserClient {
 // LoginAsUserE logs into the system as a User.
 // Returns error on failure.
 func LoginAsUserE(t *testing.T, system *EphemeralSystem) (*cb.UserClient, error) {
+
+	err := cbRegisterUser(t, system)
+	if err != nil {
+		return nil, err
+	}
+
 	return doLoginAsUser(system)
 }
 

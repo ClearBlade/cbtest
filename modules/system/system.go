@@ -1,4 +1,4 @@
-package cbtest
+package system
 
 import (
 	"fmt"
@@ -6,17 +6,19 @@ import (
 	"os"
 
 	"golang.org/x/sync/errgroup"
+
+	"github.com/clearblade/cbtest/config"
 )
 
 // EphemeralSystem represents a system that exists solely for testing.
 type EphemeralSystem struct {
-	config     *Config
+	config     *config.Config
 	localPath  string
 	isExternal bool
 }
 
 // NewImportedSystem creates a new *EphemeralSystem from an imported system.
-func NewImportedSystem(config *Config, localPath string) *EphemeralSystem {
+func NewImportedSystem(config *config.Config, localPath string) *EphemeralSystem {
 	return &EphemeralSystem{
 		config:     config,
 		localPath:  localPath,
@@ -25,7 +27,7 @@ func NewImportedSystem(config *Config, localPath string) *EphemeralSystem {
 }
 
 // NewExternalSystem creates anew *EphemeralSystem from an external system.
-func NewExternalSystem(config *Config) *EphemeralSystem {
+func NewExternalSystem(config *config.Config) *EphemeralSystem {
 	return &EphemeralSystem{
 		config:     config,
 		localPath:  "",

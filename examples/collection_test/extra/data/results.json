@@ -1,0 +1,21 @@
+{
+    "items": [],
+    "name": "results",
+    "schema": [
+        {
+        "ColumnName": "item_id",
+        "ColumnType": "uuid",
+        "PK": true
+        },
+        {
+        "ColumnName": "lhs",
+        "ColumnType": "float",
+        "PK": false
+        },
+        {
+        "ColumnName": "rhs",
+        "ColumnType": "float",
+        "PK": false
+        }
+    ]
+}

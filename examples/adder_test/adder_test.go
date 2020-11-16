@@ -7,7 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/clearblade/cbtest"
-	"github.com/clearblade/cbtest/cbassert"
+	"github.com/clearblade/cbtest/modules/service"
+	"github.com/clearblade/cbtest/modules/system"
 )
 
 const (
@@ -17,21 +18,21 @@ const (
 func TestAdder(t *testing.T) {
 
 	// import into new system
-	system := cbtest.ImportSystem(t, "./extra")
+	s := system.ImportSystem(t, "./extra")
 
 	// destroy the system after the test
-	defer cbtest.Destroy(t, system)
+	defer cbtest.Destroy(t, s)
 
 	// obtain developer client from the ephemeral system
-	devClient := cbtest.LoginAsDev(t, system)
+	devClient := system.LoginAsDev(t, s)
 
 	// payload that we will send to the adder service
 	payload := map[string]interface{}{"lhs": 3, "rhs": 4}
 
 	// call the serice
-	resp, err := devClient.CallService(system.SystemKey(), AdderService, payload, false)
+	resp, err := devClient.CallService(s.SystemKey(), AdderService, payload, false)
 	require.NoError(t, err)
 
 	// assert response from service
-	cbassert.ServiceResponseEqual(t, 7.0, resp)
+	service.AssertResponseEqual(t, 7.0, resp)
 }

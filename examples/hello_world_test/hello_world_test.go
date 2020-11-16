@@ -7,7 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/clearblade/cbtest"
-	"github.com/clearblade/cbtest/cbassert"
+	"github.com/clearblade/cbtest/modules/service"
+	"github.com/clearblade/cbtest/modules/system"
 )
 
 const (
@@ -17,18 +18,18 @@ const (
 func TestHelloWorld(t *testing.T) {
 
 	// import into new system
-	system := cbtest.ImportSystem(t, "./extra")
+	s := system.ImportSystem(t, "./extra")
 
 	// destroy the system after the test
-	defer cbtest.Destroy(t, system)
+	defer cbtest.Destroy(t, s)
 
 	// obtain developer client from the ephemeral system
-	devClient := cbtest.LoginAsDev(t, system)
+	devClient := system.LoginAsDev(t, s)
 
-	// call the serice
-	resp, err := devClient.CallService(system.SystemKey(), HelloWorldService, nil, false)
+	// call the service
+	resp, err := devClient.CallService(s.SystemKey(), HelloWorldService, nil, false)
 	require.NoError(t, err)
 
 	// assert response from service
-	cbassert.ServiceResponseEqual(t, "Hello, world!", resp)
+	service.AssertResponseEqual(t, "Hello, world!", resp)
 }

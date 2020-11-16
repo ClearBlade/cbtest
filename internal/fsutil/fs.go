@@ -1,4 +1,4 @@
-package cbtest
+package fsutil
 
 import (
 	"fmt"
@@ -9,9 +9,9 @@ import (
 	cp "github.com/otiai10/copy"
 )
 
-// FoldersToIgnore contains all the folders that are gonna be ignored during
+// defaultIgnore contains all the folders that are gonna be ignored during
 // the merging process.
-var FoldersToIgnore = []string{
+var defaultIgnore = []string{
 	"node_modules",
 }
 
@@ -37,7 +37,7 @@ func IsFile(path string) bool {
 	return !info.IsDir()
 }
 
-// MakeTempDir returns a new temporary directory.
+// MakeTempDir returns a new temporary directory path and a cleanup function.
 func MakeTempDir() (string, func()) {
 
 	dir, err := ioutil.TempDir("", "cbtest-*")
@@ -52,12 +52,19 @@ func MakeTempDir() (string, func()) {
 
 // MergeFolders merges all the content of `srcs` folders into a single `dest` path.
 func MergeFolders(dest string, srcs ...string) error {
+	skip := MakeSkip(defaultIgnore)
+	return MergeFoldersWithSkip(skip, dest, srcs...)
+}
+
+// MergeFoldersWithSkip merges all the contents of `srcs` folders into a single
+// `dest` path using the given skip function.
+func MergeFoldersWithSkip(skip func(string) (bool, error), dest string, srcs ...string) error {
 
 	if !IsDir(dest) {
 		return fmt.Errorf("dest is not a directory: %s", dest)
 	}
 
-	options := cp.Options{Skip: shouldSkip}
+	options := cp.Options{Skip: skip}
 
 	for _, src := range srcs {
 
@@ -72,16 +79,17 @@ func MergeFolders(dest string, srcs ...string) error {
 	}
 
 	return nil
+
 }
 
-// shouldSkip returns true for any folders that should not be merged.
-func shouldSkip(src string) (bool, error) {
-
-	for _, folder := range FoldersToIgnore {
-		if strings.Contains(src, folder) {
-			return true, nil
+// MakeSkip returns a skip function that skips any of the given names.
+func MakeSkip(names []string) func(string) (bool, error) {
+	return func(src string) (bool, error) {
+		for _, name := range names {
+			if strings.Contains(src, name) {
+				return true, nil
+			}
 		}
+		return false, nil
 	}
-
-	return false, nil
 }

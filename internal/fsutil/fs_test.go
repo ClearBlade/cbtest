@@ -1,4 +1,4 @@
-package cbtest
+package fsutil
 
 import (
 	"fmt"
@@ -127,7 +127,6 @@ func TestMergeFoldersWithSingleNestedSourceSucceeds(t *testing.T) {
 
 	expected := []string{
 		tempdir,
-		fmt.Sprintf("%s/README.md", tempdir),
 		fmt.Sprintf("%s/bar", tempdir),
 		fmt.Sprintf("%s/bar/bar.txt", tempdir),
 		fmt.Sprintf("%s/baz", tempdir),
@@ -135,8 +134,6 @@ func TestMergeFoldersWithSingleNestedSourceSucceeds(t *testing.T) {
 		fmt.Sprintf("%s/foo", tempdir),
 		fmt.Sprintf("%s/foo/foo.txt", tempdir),
 		fmt.Sprintf("%s/qux", tempdir),
-		fmt.Sprintf("%s/sys", tempdir),
-		fmt.Sprintf("%s/sys/system.json", tempdir),
 	}
 
 	assert.Equal(t, expected, listFiles(tempdir))

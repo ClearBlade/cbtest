@@ -1,4 +1,4 @@
-package cbtest
+package config
 
 import (
 	"reflect"

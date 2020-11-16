@@ -1,4 +1,4 @@
-package cbtest
+package system
 
 import (
 	"testing"
@@ -12,6 +12,6 @@ func TestCheckSystemValidSystemSucceeds(t *testing.T) {
 }
 
 func TestCheckSystemNonSystemFails(t *testing.T) {
-	err := checkSystem("golden/foo")
+	err := checkSystem("golden/nosys")
 	assert.Error(t, err)
 }

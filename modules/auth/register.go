@@ -117,9 +117,9 @@ func cbRegisterDevice(t cbtest.T, provider config.Provider, name, activeKey stri
 		return err
 	}
 
+	data := cbMakeRegisterDeviceData(name, activeKey)
 	config := provider.Provide()
 
-	data := map[string]interface{}{"active_key": activeKey}
 	_, err = devClient.CreateDevice(config.SystemKey, name, data)
 	if err != nil && !strings.Contains(err.Error(), "already exists") {
 		return err
@@ -131,4 +131,18 @@ func cbRegisterDevice(t cbtest.T, provider config.Provider, name, activeKey stri
 	}
 
 	return nil
+}
+
+// cbMakeRegisterDeviceData creates the payload required to create a new device.
+// For some reason we need to specify these this when creting a device.
+func cbMakeRegisterDeviceData(name, activeKey string) map[string]interface{} {
+	return map[string]interface{}{
+		"active_key":             activeKey,
+		"allow_certificate_auth": true,
+		"allow_key_auth":         true,
+		"enabled":                true,
+		"name":                   name,
+		"type":                   "",
+		"state":                  "",
+	}
 }

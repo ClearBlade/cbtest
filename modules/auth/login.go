@@ -3,9 +3,9 @@ package auth
 import (
 	"fmt"
 
+	cb "github.com/clearblade/Go-SDK"
 	"github.com/stretchr/testify/require"
 
-	cb "github.com/clearblade/Go-SDK"
 	"github.com/clearblade/cbtest"
 	"github.com/clearblade/cbtest/config"
 )

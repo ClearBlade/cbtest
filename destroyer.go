@@ -9,12 +9,12 @@ import (
 // Destroyer specicies a destroy function that can be used for getting rid of a
 // resource.
 type Destroyer interface {
-	Destroy() error
+	Destroy(t *testing.T) error
 }
 
 // Destroy destroys the given destroyer, and fails the test if any error is
 // returned.
 func Destroy(t *testing.T, destroyer Destroyer) {
-	err := destroyer.Destroy()
+	err := destroyer.Destroy(t)
 	require.NoError(t, err)
 }

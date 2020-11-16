@@ -7,6 +7,11 @@ import (
 	"os"
 )
 
+// Provider defines an interface for a single function that provides a config.
+type Provider interface {
+	Provide() *Config
+}
+
 // useOrDefault returns `value` if not empty, otherwise it returns `fallback`.
 func useOrDefault(value, fallback string) string {
 	if len(value) > 0 {
@@ -125,6 +130,11 @@ func (c *Config) overrideFromFlags() {
 	// NOTE: let the boolean flag decide the value
 	c.Import.ImportUsers = ShouldImportUsers()
 	c.Import.ImportRows = ShouldImportRows()
+}
+
+// Provide returns a *Config instance.
+func (c *Config) Provide() *Config {
+	return c
 }
 
 // HasSystem returns true if the given config has system information.

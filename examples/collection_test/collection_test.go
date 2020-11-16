@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/clearblade/cbtest"
+	"github.com/clearblade/cbtest/modules/auth"
 	"github.com/clearblade/cbtest/modules/service"
 	"github.com/clearblade/cbtest/modules/system"
 )
@@ -36,7 +37,7 @@ func TestCollection(t *testing.T) {
 	defer cbtest.Destroy(t, s)
 
 	// obtain developer client from the ephemeral system
-	userClient := system.LoginAsUser(t, s)
+	userClient := auth.LoginAsUser(t, s)
 	time.Sleep(time.Second * 2)
 
 	// calls all the required operations from table

@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"testing"
 
 	"golang.org/x/sync/errgroup"
 
 	"github.com/clearblade/cbtest/config"
+	"github.com/clearblade/cbtest/modules/auth"
 )
 
 // EphemeralSystem represents a system that exists solely for testing.
@@ -33,6 +35,19 @@ func NewExternalSystem(config *config.Config) *EphemeralSystem {
 		localPath:  "",
 		isExternal: true,
 	}
+}
+
+// Config returns the config that was used for creating this system. We make it
+// a function instead of a public field in case we want to clone or manipulate
+// it before returning.
+func (es *EphemeralSystem) Config() *config.Config {
+	return es.config
+}
+
+// Provide returns the config that was used for creating this system. This
+// function implements the config.Provider interface.
+func (es *EphemeralSystem) Provide() *config.Config {
+	return es.config
 }
 
 // PlatformURL returns the platform url that hosts this system.
@@ -79,9 +94,10 @@ func (es *EphemeralSystem) RemoteURL() string {
 }
 
 // Destroy destroys the remote system instance, as well as the local folder.
-func (es *EphemeralSystem) Destroy() error {
+func (es *EphemeralSystem) Destroy(t *testing.T) error {
 
 	if es.IsExternal() {
+		t.Log("External system not destroyed")
 		return nil
 	}
 
@@ -92,7 +108,7 @@ func (es *EphemeralSystem) Destroy() error {
 	})
 
 	g.Go(func() error {
-		devClient, err := doLoginAsDev(es)
+		devClient, err := auth.LoginAsDevE(t, es)
 		if err != nil {
 			return err
 		}

@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/clearblade/cbtest"
+	"github.com/clearblade/cbtest/modules/auth"
 	"github.com/clearblade/cbtest/modules/service"
 	"github.com/clearblade/cbtest/modules/system"
 )
@@ -24,7 +25,7 @@ func TestAdder(t *testing.T) {
 	defer cbtest.Destroy(t, s)
 
 	// obtain developer client from the ephemeral system
-	devClient := system.LoginAsDev(t, s)
+	devClient := auth.LoginAsDev(t, s)
 
 	// payload that we will send to the adder service
 	payload := map[string]interface{}{"lhs": 3, "rhs": 4}

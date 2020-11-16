@@ -9,11 +9,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	cb "github.com/clearblade/Go-SDK"
 	"github.com/clearblade/cblib"
 
 	"github.com/clearblade/cbtest/config"
 	"github.com/clearblade/cbtest/internal/fsutil"
+	"github.com/clearblade/cbtest/modules/auth"
 )
 
 // checkSystem returns true if the given path contains a system.
@@ -33,6 +33,7 @@ func checkSystem(path string) error {
 // `systemPath` and the extra files given by each of the `extraPaths`.
 // Panics on error.
 func ImportSystem(t *testing.T, systemPath string, extraPaths ...string) *EphemeralSystem {
+	t.Helper()
 	system, err := ImportSystemE(t, systemPath, extraPaths...)
 	require.NoError(t, err)
 	return system
@@ -42,6 +43,7 @@ func ImportSystem(t *testing.T, systemPath string, extraPaths ...string) *Epheme
 // `systemPath` and the extra files given by each of the `extraPaths`.
 // Returns an error on failure.
 func ImportSystemE(t *testing.T, systemPath string, extraPaths ...string) (*EphemeralSystem, error) {
+	t.Helper()
 
 	config, err := config.ObtainConfig()
 	if err != nil {
@@ -56,6 +58,8 @@ func ImportSystemE(t *testing.T, systemPath string, extraPaths ...string) (*Ephe
 // into the platform instance given by the config.
 // Panics on error.
 func ImportSystemWithConfig(t *testing.T, config *config.Config, systemPath string, extraPaths ...string) *EphemeralSystem {
+	t.Helper()
+
 	system, err := ImportSystemWithConfigE(t, config, systemPath, extraPaths...)
 	require.NoError(t, err)
 	return system
@@ -66,6 +70,7 @@ func ImportSystemWithConfig(t *testing.T, config *config.Config, systemPath stri
 // into the platform instance given by the config.
 // Returns error on failure.
 func ImportSystemWithConfigE(t *testing.T, config *config.Config, systemPath string, extraPaths ...string) (*EphemeralSystem, error) {
+	t.Helper()
 
 	var err error
 
@@ -97,6 +102,20 @@ func ImportSystemWithConfigE(t *testing.T, config *config.Config, systemPath str
 		return nil, err
 	}
 
+	t.Log("Registering developer...")
+	err = auth.RegisterDevE(t, system, config.Developer.Email, config.Developer.Password)
+	if err != nil {
+		cleanup()
+		return nil, err
+	}
+
+	t.Log("Registering user...")
+	err = auth.RegisterUserE(t, system, config.User.Email, config.User.Password)
+	if err != nil {
+		cleanup()
+		return nil, err
+	}
+
 	t.Logf("Import successful: %s", system.RemoteURL())
 	return system, nil
 }
@@ -106,10 +125,11 @@ func ImportSystemWithConfigE(t *testing.T, config *config.Config, systemPath str
 // secret.
 // Returns stdout/stderr and error on failure.
 func cbImportSystem(t *testing.T, system *EphemeralSystem) (string, error) {
+	t.Helper()
 
 	importConfig := cbImportConfig(t, system)
 
-	devClient, err := LoginAsDevE(t, system)
+	devClient, err := auth.LoginAsDevE(t, system)
 	if err != nil {
 		return "", err
 	}
@@ -126,6 +146,7 @@ func cbImportSystem(t *testing.T, system *EphemeralSystem) (string, error) {
 
 // cbImportConfig returns a cblib.ImportConfig instance for importing the system.
 func cbImportConfig(t *testing.T, system *EphemeralSystem) cblib.ImportConfig {
+	t.Helper()
 
 	name := fmt.Sprintf("cbtest-%s", t.Name())
 	nowstr := time.Now().UTC().Format(time.UnixDate)
@@ -142,6 +163,7 @@ func cbImportConfig(t *testing.T, system *EphemeralSystem) cblib.ImportConfig {
 // by the config flag. External systems are never destroyed automatically.
 // Panics on failure.
 func UseSystem(t *testing.T) *EphemeralSystem {
+	t.Helper()
 	system, err := UseSystemE(t)
 	require.NoError(t, err)
 	return system
@@ -151,6 +173,7 @@ func UseSystem(t *testing.T) *EphemeralSystem {
 // by the config flag. External systems are never destroyed automatically.
 // Returns error on failure.
 func UseSystemE(t *testing.T) (*EphemeralSystem, error) {
+	t.Helper()
 
 	config, err := config.ObtainConfig()
 	if err != nil {
@@ -164,6 +187,7 @@ func UseSystemE(t *testing.T) (*EphemeralSystem, error) {
 // by the config. External systems are never destroyed automatically.
 // Panics on error.
 func UseSystemWithConfig(t *testing.T, config *config.Config) *EphemeralSystem {
+	t.Helper()
 	system, err := UseSystemWithConfigE(t, config)
 	require.NoError(t, err)
 	return system
@@ -173,81 +197,6 @@ func UseSystemWithConfig(t *testing.T, config *config.Config) *EphemeralSystem {
 // by the config. External systems are never destroyed automatically.
 // Returns error on failure.
 func UseSystemWithConfigE(t *testing.T, config *config.Config) (*EphemeralSystem, error) {
+	t.Helper()
 	return NewExternalSystem(config), nil
-}
-
-// LoginAsDev logs into the system as a Developer (given by config).
-// Panics on failure.
-func LoginAsDev(t *testing.T, system *EphemeralSystem) *cb.DevClient {
-	devClient, err := LoginAsDevE(t, system)
-	require.NoError(t, err)
-	return devClient
-}
-
-// LoginAsDevE logs into the System as a Developer (given by config).
-// Returns error on failure.
-func LoginAsDevE(t *testing.T, system *EphemeralSystem) (*cb.DevClient, error) {
-
-	err := cbRegisterDeveloper(t, system)
-	if err != nil {
-		return nil, err
-	}
-
-	return doLoginAsDev(system)
-}
-
-func doLoginAsDev(system *EphemeralSystem) (*cb.DevClient, error) {
-
-	var err error
-	config := system.config
-
-	if !config.HasDeveloper() {
-		return nil, fmt.Errorf("config does not have developer information")
-	}
-
-	devClient := cb.NewDevClientWithAddrs(config.PlatformURL, config.MessagingURL, config.Developer.Email, config.Developer.Password)
-	_, err = devClient.Authenticate()
-	if err != nil {
-		return nil, err
-	}
-
-	return devClient, nil
-}
-
-// LoginAsUser logs into the system as a User.
-// Panics on failure.
-func LoginAsUser(t *testing.T, system *EphemeralSystem) *cb.UserClient {
-	userClient, err := LoginAsUserE(t, system)
-	require.NoError(t, err)
-	return userClient
-}
-
-// LoginAsUserE logs into the system as a User.
-// Returns error on failure.
-func LoginAsUserE(t *testing.T, system *EphemeralSystem) (*cb.UserClient, error) {
-
-	err := cbRegisterUser(t, system)
-	if err != nil {
-		return nil, err
-	}
-
-	return doLoginAsUser(system)
-}
-
-func doLoginAsUser(system *EphemeralSystem) (*cb.UserClient, error) {
-
-	config := system.config
-
-	if !config.HasUser() {
-		return nil, fmt.Errorf("config does not have user information")
-	}
-
-	userClient := cb.NewUserClientWithAddrs(config.PlatformURL, config.MessagingURL, config.SystemKey, config.SystemSecret, config.User.Email, config.User.Password)
-	_, err := userClient.Authenticate()
-	if err != nil {
-		return nil, err
-	}
-
-	return userClient, nil
-
 }

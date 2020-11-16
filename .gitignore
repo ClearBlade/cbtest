@@ -788,5 +788,5 @@ MigrationBackup/
 
 ### CUSTOM ###
 
-!golden/qux/node_modules/
+!**/golden/**/node_modules/
 

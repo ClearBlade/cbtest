@@ -19,7 +19,7 @@ const (
 // mqttInit interface defines a function for initialing the MQTT client. Clients
 // in the ClearBlade SDK already implement this interface.
 type mqttInit interface {
-	InitializeMQTT(clientID string, ignore string, timeout int, ssl *tls.Config, lastWill *cb.LastWillPacket) error
+	InitializeMQTT(clientID string, systemKey string, timeout int, ssl *tls.Config, lastWill *cb.LastWillPacket) error
 }
 
 // InitializeMQTT initializes MQTT for the given client.

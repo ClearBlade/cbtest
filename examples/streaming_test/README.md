@@ -1,3 +1,14 @@
+Streaming test showcases a test against a ClearBlade system with stream services.
+
+### Structure
+
+- `extra/`: The system that gets imported by the test.
+
+- `message.go`: Contains the definition and generation of messages that we send.
+
+- `streaming_test.go`: The actual test.
+
+### How to run
 
 Run with default flags:
 

@@ -11,13 +11,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	cb "github.com/clearblade/Go-SDK"
 	"github.com/clearblade/cbtest/modules/auth"
 	"github.com/clearblade/cbtest/modules/collection"
 	"github.com/clearblade/cbtest/modules/mqtt"
 	"github.com/clearblade/cbtest/modules/system"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 // Globals

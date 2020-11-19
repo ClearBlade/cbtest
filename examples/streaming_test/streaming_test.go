@@ -112,7 +112,6 @@ func deviceWorker(t *testing.T, s *system.EphemeralSystem, devClient *cb.DevClie
 	mqtt.InitializeMQTT(t, s, deviceClient)
 
 	// publish
-
 	start := time.Now()
 	for time.Since(start) < *flagDuration {
 
@@ -130,7 +129,7 @@ func deviceWorker(t *testing.T, s *system.EphemeralSystem, devClient *cb.DevClie
 		time.Sleep(*flagPeriod)
 	}
 
-	t.Log("Done")
+	t.Log("Done publishing")
 	return messagesPublished
 }
 

@@ -15,13 +15,13 @@
 `cbtest` is Go library that makes it easy to write automated tests against your
 [ClearBlade][clearblade] systems. It provides the following features:
 
-- Integrates with the [Go testing][go-testing] package.
+- Integrates with the [Go testing][go-testing] package and similar libraries.
 
-- Importing systems.
+- Importing systems (with multiple system merge).
 
 - Destroying systems.
 
-- Combining systems before importing (base system plus extra).
+- Using existing systems.
 
 - Uses the [ClearBlade Go SDK][clearblade-go-sdk].
 

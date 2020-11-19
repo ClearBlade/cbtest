@@ -83,6 +83,8 @@ func devicesConnectAndPublish(t *testing.T, s *system.EphemeralSystem, devClient
 
 	var totalPublishes int32
 
+	// NOTE: will block until all workers are done.
+	// see: https://blog.golang.org/subtests#TOC_7.
 	t.Run("Devices connect and publish", func(t *testing.T) {
 		for idx := 0; idx < *flagDevices; idx++ {
 			name := fmt.Sprintf("Device-%d", idx)

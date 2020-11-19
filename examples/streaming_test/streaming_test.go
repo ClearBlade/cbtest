@@ -65,10 +65,10 @@ func TestStreaming(t *testing.T) {
 	require.NoError(t, err)
 
 	// connect each device and publish
-	totalPublishes := devicesConnectAndPublish(t, s, devClient)
+	totalPublishes := devicesConnectAndPublish(t, s)
 
 	// check results
-	checkResults(t, s, devClient, totalPublishes)
+	checkResults(t, s, totalPublishes)
 }
 
 // Test helpers
@@ -80,7 +80,7 @@ func logFlags(t *testing.T) {
 	t.Logf("Period between publishes: %s", *flagPeriod)
 }
 
-func devicesConnectAndPublish(t *testing.T, s *system.EphemeralSystem, devClient *cb.DevClient) int {
+func devicesConnectAndPublish(t *testing.T, s *system.EphemeralSystem) int {
 
 	var totalPublishes int32
 
@@ -91,7 +91,7 @@ func devicesConnectAndPublish(t *testing.T, s *system.EphemeralSystem, devClient
 			name := fmt.Sprintf("Device-%d", idx)
 			t.Run(name, func(t *testing.T) {
 				t.Parallel()
-				workerPublishes := deviceWorker(t, s, devClient, name)
+				workerPublishes := deviceWorker(t, s, name)
 				atomic.AddInt32(&totalPublishes, int32(workerPublishes))
 			})
 		}
@@ -100,7 +100,7 @@ func devicesConnectAndPublish(t *testing.T, s *system.EphemeralSystem, devClient
 	return int(totalPublishes)
 }
 
-func deviceWorker(t *testing.T, s *system.EphemeralSystem, devClient *cb.DevClient, name string) int {
+func deviceWorker(t *testing.T, s *system.EphemeralSystem, name string) int {
 
 	messagesPublished := 0
 
@@ -136,7 +136,7 @@ func deviceWorker(t *testing.T, s *system.EphemeralSystem, devClient *cb.DevClie
 	return messagesPublished
 }
 
-func checkResults(t *testing.T, s *system.EphemeralSystem, devClient *cb.DevClient, messagesPublished int) {
+func checkResults(t *testing.T, s *system.EphemeralSystem, messagesPublished int) {
 	t.Run("Check results", func(t *testing.T) {
 
 		// ID of the collection we are gonna check

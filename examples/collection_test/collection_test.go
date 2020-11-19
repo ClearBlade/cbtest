@@ -50,5 +50,5 @@ func TestCollection(t *testing.T) {
 	collID := collection.IDByName(t, s, ResultsCollection)
 
 	// assert on the collection data
-	collection.AssertHasLength(t, s, collID, len(table))
+	collection.AssertHasTotal(t, s, collID, len(table))
 }

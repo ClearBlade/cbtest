@@ -1,4 +1,4 @@
-// Package streatming_test showcases a test that interacts and measures simple
+// Package streatming showcases a test that interacts and measures simple
 // metrics for a streaming service.
 // See: https://blog.golang.org/subtests
 package streaming

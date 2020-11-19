@@ -28,7 +28,7 @@ func TestSystemMerge(t *testing.T) {
 	// obtain developer client from the ephemeral system
 	devClient := auth.LoginAsDev(t, s)
 
-	// call the foo serice
+	// call the foo service
 	foo, err := devClient.CallService(s.SystemKey(), FooService, nil, false)
 	require.NoError(t, err)
 

@@ -11,11 +11,6 @@ import (
 	"github.com/clearblade/cbtest"
 )
 
-// Provider defines an interface for a single function that provides a config.
-type Provider interface {
-	Provide() *Config
-}
-
 // useOrDefault returns `value` if not empty, otherwise it returns `fallback`.
 func useOrDefault(value, fallback string) string {
 	if len(value) > 0 {
@@ -199,9 +194,14 @@ func (c *Config) overrideFromFlags() {
 	c.Import.ImportRows = ShouldImportRows()
 }
 
-// Provide returns a *Config instance.
-func (c *Config) Provide() *Config {
+// Config returns a *Config instance.
+func (c *Config) Config(cbtest.T) *Config {
 	return c
+}
+
+// ConfigE returns a *Config instance.
+func (c *Config) ConfigE(cbtest.T) (*Config, error) {
+	return c, nil
 }
 
 // HasSystem returns true if the given config has system information.

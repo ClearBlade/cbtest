@@ -3,7 +3,9 @@ package system
 import (
 	"fmt"
 	"net/url"
+	"sync"
 
+	cb "github.com/clearblade/Go-SDK"
 	"github.com/clearblade/cbtest/config"
 )
 
@@ -12,6 +14,8 @@ type EphemeralSystem struct {
 	config     *config.Config
 	localPath  string
 	isExternal bool
+	client     *cb.DevClient
+	clientLock sync.Mutex
 }
 
 // NewImportedSystem creates a new *EphemeralSystem from an imported system.

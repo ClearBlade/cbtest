@@ -8,7 +8,7 @@ import (
 
 	cb "github.com/clearblade/Go-SDK"
 	"github.com/clearblade/cbtest"
-	"github.com/clearblade/cbtest/config"
+	"github.com/clearblade/cbtest/provider"
 	"github.com/stretchr/testify/require"
 )
 
@@ -24,7 +24,7 @@ type mqttInit interface {
 
 // InitializeMQTT initializes MQTT for the given client.
 // Panics on failure.
-func InitializeMQTT(t cbtest.T, provider config.Provider, client mqttInit) {
+func InitializeMQTT(t cbtest.T, provider provider.Config, client mqttInit) {
 	t.Helper()
 	err := InitializeMQTTE(t, provider, client)
 	require.NoError(t, err)
@@ -32,21 +32,21 @@ func InitializeMQTT(t cbtest.T, provider config.Provider, client mqttInit) {
 
 // InitializeMQTTE initializes MQTT for the given client.
 // Returns error on failure.
-func InitializeMQTTE(t cbtest.T, provider config.Provider, client mqttInit) error {
+func InitializeMQTTE(t cbtest.T, provider provider.Config, client mqttInit) error {
 	t.Helper()
-	err := cbInitializeMQTT(provider, client)
+	err := cbInitializeMQTT(t, provider, client)
 	return err
 }
 
 // cbInitializeMQTT initializes the given mqttInit interface.
-func cbInitializeMQTT(provider config.Provider, mqtt mqttInit) error {
+func cbInitializeMQTT(t cbtest.T, provider provider.Config, mqtt mqttInit) error {
 
 	randomString, err := generateRandomString()
 	if err != nil {
 		return err
 	}
 
-	config := provider.Provide()
+	config := provider.Config(t)
 	clientID := fmt.Sprintf("cbtest%s", randomString)
 	err = mqtt.InitializeMQTT(clientID, config.SystemKey, mqttTimeoutSeconds, nil, nil)
 	if err != nil {

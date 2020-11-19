@@ -3,6 +3,7 @@ module github.com/clearblade/cbtest
 go 1.15
 
 require (
+	github.com/brianvoe/gofakeit/v5 v5.10.1
 	github.com/clearblade/Go-SDK v0.0.0-20201017144104-06254e31ee03
 	github.com/clearblade/cblib v0.0.0-20201113171925-db5697b9a6fe
 	github.com/mcuadros/go-lookup v0.0.0-20200831155250-80f87a4fa5ee

@@ -1,4 +1,4 @@
-// Package adder_test showcases a test that passes parameters to a code service.
+// Package collection_test showcases a test that checks a collection.
 package collection_test
 
 import (
@@ -47,10 +47,8 @@ func TestCollection(t *testing.T) {
 	}
 
 	// fetch all collection data
-	collID := collection.IDByName(t, s, devClient, ResultsCollection)
-	data, err := devClient.GetData(collID, nil)
-	require.NoError(t, err)
+	collID := collection.IDByName(t, s, ResultsCollection)
 
 	// assert on the collection data
-	collection.AssertHasLength(t, 3, data)
+	collection.AssertHasLength(t, s, collID, len(table))
 }

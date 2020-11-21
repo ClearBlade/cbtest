@@ -12,6 +12,7 @@ import (
 	"github.com/clearblade/cbtest"
 	"github.com/clearblade/cbtest/config"
 	"github.com/clearblade/cbtest/internal/fsutil"
+	"github.com/clearblade/cbtest/internal/merge"
 	"github.com/clearblade/cbtest/modules/auth"
 )
 
@@ -83,12 +84,12 @@ func ImportWithConfigE(t cbtest.T, config *config.Config, systemPath string, ext
 	system := NewImportedSystem(config, tempdir)
 
 	// the system paths that are gonna be merged into the temporary directory
-	merge := make([]string, 0, 1+len(extraPaths))
-	merge = append(merge, systemPath)
-	merge = append(merge, extraPaths...)
+	mergePaths := make([]string, 0, 1+len(extraPaths))
+	mergePaths = append(mergePaths, systemPath)
+	mergePaths = append(mergePaths, extraPaths...)
 
 	t.Log("Merging system folders...")
-	err = fsutil.MergeFolders(tempdir, merge...)
+	err = merge.Folders(tempdir, mergePaths...)
 	if err != nil {
 		cleanupLocal()
 		return nil, err

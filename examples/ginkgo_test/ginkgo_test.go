@@ -42,7 +42,7 @@ var _ = Describe("Adder test", func() {
 	BeforeSuite(func() {
 
 		// import into new system
-		s = system.Import(T(), "./extra")
+		s = system.UseOrImport(T(), "./extra")
 
 		// obtain developer client from the ephemeral system
 		devClient = auth.LoginAsDev(T(), s)

@@ -1,10 +1,13 @@
 package system
 
 import (
+	"fmt"
+
 	"github.com/stretchr/testify/require"
 
 	"github.com/clearblade/cbtest"
 	"github.com/clearblade/cbtest/config"
+	"github.com/clearblade/cbtest/provider"
 )
 
 // Use uses the external (not managed by cbtest) system given
@@ -34,9 +37,9 @@ func UseE(t cbtest.T) (*EphemeralSystem, error) {
 // UseWithConfig uses the external (not managed by cbtest) system given
 // by the config. External systems are never destroyed automatically.
 // Panics on error.
-func UseWithConfig(t cbtest.T, config *config.Config) *EphemeralSystem {
+func UseWithConfig(t cbtest.T, provider provider.Config) *EphemeralSystem {
 	t.Helper()
-	system, err := UseWithConfigE(t, config)
+	system, err := UseWithConfigE(t, provider)
 	require.NoError(t, err)
 	return system
 }
@@ -44,8 +47,15 @@ func UseWithConfig(t cbtest.T, config *config.Config) *EphemeralSystem {
 // UseWithConfigE uses the external (not managed by cbtest) system given
 // by the config. External systems are never destroyed automatically.
 // Returns error on failure.
-func UseWithConfigE(t cbtest.T, config *config.Config) (*EphemeralSystem, error) {
+func UseWithConfigE(t cbtest.T, provider provider.Config) (*EphemeralSystem, error) {
 	t.Helper()
+
+	config := provider.Config(t)
+
+	if !config.HasSystem() {
+		return nil, fmt.Errorf("external system configuration did not specify a system key or secret")
+	}
+
 	system := NewExternalSystem(config)
 	t.Logf("Using existing system")
 	t.Logf("System URL: %s", system.RemoteURL())

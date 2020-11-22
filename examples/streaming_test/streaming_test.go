@@ -45,7 +45,7 @@ func TestStreaming(t *testing.T) {
 	logFlags(t)
 
 	// import into new system
-	s := system.Import(t, "./extra")
+	s := system.UseOrImport(t, "./extra")
 
 	// destroy the system after the test
 	defer system.Destroy(t, s)

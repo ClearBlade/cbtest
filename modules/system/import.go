@@ -14,6 +14,7 @@ import (
 	"github.com/clearblade/cbtest/internal/fsutil"
 	"github.com/clearblade/cbtest/internal/merge"
 	"github.com/clearblade/cbtest/modules/auth"
+	"github.com/clearblade/cbtest/provider"
 )
 
 // checkSystem returns true if the given path contains a system.
@@ -31,7 +32,7 @@ func checkSystem(path string) error {
 
 // Import imports the system given by merging the base system given by
 // `systemPath` and the extra files given by each of the `extraPaths`.
-// Panics on error.
+// Panics on failure.
 func Import(t cbtest.T, systemPath string, extraPaths ...string) *EphemeralSystem {
 	t.Helper()
 	system, err := ImportE(t, systemPath, extraPaths...)
@@ -41,7 +42,7 @@ func Import(t cbtest.T, systemPath string, extraPaths ...string) *EphemeralSyste
 
 // ImportE imports the system given by merging the base system given by
 // `systemPath` and the extra files given by each of the `extraPaths`.
-// Returns an error on failure.
+// Returns error on failure.
 func ImportE(t cbtest.T, systemPath string, extraPaths ...string) (*EphemeralSystem, error) {
 	t.Helper()
 
@@ -57,10 +58,10 @@ func ImportE(t cbtest.T, systemPath string, extraPaths ...string) (*EphemeralSys
 // given by `systemPath` and the extra files given by each of the `extraPaths`
 // into the platform instance given by the config.
 // Panics on error.
-func ImportWithConfig(t cbtest.T, config *config.Config, systemPath string, extraPaths ...string) *EphemeralSystem {
+func ImportWithConfig(t cbtest.T, provider provider.Config, systemPath string, extraPaths ...string) *EphemeralSystem {
 	t.Helper()
 
-	system, err := ImportWithConfigE(t, config, systemPath, extraPaths...)
+	system, err := ImportWithConfigE(t, provider, systemPath, extraPaths...)
 	require.NoError(t, err)
 	return system
 }
@@ -69,7 +70,7 @@ func ImportWithConfig(t cbtest.T, config *config.Config, systemPath string, extr
 // given by `systemPath` and the extra files given by each of the `extraPaths`
 // into the platform instance given by the config.
 // Returns error on failure.
-func ImportWithConfigE(t cbtest.T, config *config.Config, systemPath string, extraPaths ...string) (*EphemeralSystem, error) {
+func ImportWithConfigE(t cbtest.T, provider provider.Config, systemPath string, extraPaths ...string) (*EphemeralSystem, error) {
 	t.Helper()
 
 	var err error
@@ -78,6 +79,8 @@ func ImportWithConfigE(t cbtest.T, config *config.Config, systemPath string, ext
 	if err != nil {
 		return nil, err
 	}
+
+	config := provider.Config(t)
 
 	// our imported system root will be at a temporary directory
 	tempdir, cleanupLocal := fsutil.MakeTempDir()

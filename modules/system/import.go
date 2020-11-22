@@ -17,7 +17,7 @@ import (
 	"github.com/clearblade/cbtest/provider"
 )
 
-// checkSystem returns true if the given path contains a system.
+// checkSystem returns error if the given path does not contain a system.
 func checkSystem(path string) error {
 
 	systemJSONPath := filepath.Join(path, "system.json")

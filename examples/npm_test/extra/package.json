@@ -1,0 +1,17 @@
+{
+  "name": "extra",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "./scripts/build.sh"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@swc/cli": "^0.1.27",
+    "@swc/core": "^1.2.38"
+  }
+}

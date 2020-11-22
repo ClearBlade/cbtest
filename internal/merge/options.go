@@ -6,7 +6,7 @@ var defaultIgnore = []string{
 	"node_modules",
 }
 
-// Options struct specifies different merge options that can be pased to the
+// Options struct specifies different merge options that can be passed to the
 // MergeWithOptions function.
 type Options struct {
 

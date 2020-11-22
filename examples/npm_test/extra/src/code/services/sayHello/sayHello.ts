@@ -7,13 +7,13 @@ interface Response {
     success(message: string);
 }
 
-function sayHello(name: string): string {
+function makeHelloMessage(name: string): string {
     return `Hello, ${name}`;
 }
 
-function helloWorld(req: Request, resp: Response) {
+function sayHello(req: Request, resp: Response) {
 
     const { name = "world!" } = req.params;
 
-    resp.success(sayHello(name));
+    resp.success(makeHelloMessage(name));
 }

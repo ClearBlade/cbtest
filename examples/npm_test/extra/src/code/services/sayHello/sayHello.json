@@ -5,7 +5,7 @@
     "dependencies": "log",
     "execution_timeout": 60,
     "logging_enabled": false,
-    "name": "helloWorld",
+    "name": "sayHello",
     "params": [],
     "run_user": ""
 }

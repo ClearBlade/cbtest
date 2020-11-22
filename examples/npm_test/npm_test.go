@@ -15,15 +15,15 @@ import (
 )
 
 const (
-	HelloWorldService = "helloWorld"
+	SayHelloService = "sayHello"
 )
 
-func TestHelloWorld(t *testing.T) {
+func TestNPMBasedSystem(t *testing.T) {
 
 	// executes npm before we import the system
 	npm.Use(t, "./extra").Install().Run("build")
 
-	// import into new system
+	// import transpiled dist into new system
 	s := system.UseOrImport(t, "./extra/dist")
 
 	// destroy the system after the test
@@ -34,7 +34,7 @@ func TestHelloWorld(t *testing.T) {
 
 	// call the service
 	data := map[string]interface{}{"name": "npm!"}
-	resp, err := devClient.CallService(s.SystemKey(), HelloWorldService, data, false)
+	resp, err := devClient.CallService(s.SystemKey(), SayHelloService, data, false)
 	require.NoError(t, err)
 
 	// assert response from service

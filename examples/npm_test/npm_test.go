@@ -1,4 +1,6 @@
 // Package npm_test showcases a test that executes npm before importing the system.
+// Useful for systems that are written in TypeScript and need to be transpiled
+// beforehand.
 package npm_test
 
 import (
@@ -22,7 +24,7 @@ func TestHelloWorld(t *testing.T) {
 	npm.Use(t, "./extra").Install().Run("build")
 
 	// import into new system
-	s := system.UseOrImport(t, "./extra")
+	s := system.UseOrImport(t, "./extra/dist")
 
 	// destroy the system after the test
 	defer system.Destroy(t, s)

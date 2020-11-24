@@ -51,8 +51,8 @@ var _ = Describe("Adder test", func() {
 
 	AfterSuite(func() {
 
-		// destroy the system after the test
-		system.Destroy(T(), s)
+		// close the system after the test
+		system.Close(T(), s)
 
 	})
 

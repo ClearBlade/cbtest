@@ -32,8 +32,8 @@ func TestCollection(t *testing.T) {
 	// import into new system
 	s := system.UseOrImport(t, "./extra")
 
-	// destroy the system after the test
-	defer system.Destroy(t, s)
+	// close the system after the test
+	defer system.Close(t, s)
 
 	// obtain developer client from the ephemeral system
 	devClient := auth.LoginAsDev(t, s)

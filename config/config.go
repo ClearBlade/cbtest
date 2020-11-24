@@ -8,15 +8,15 @@
 // A minimal configuration file looks like follows:
 //
 //     {
-// 	     "platformUrl": "https://INSTANCE.clearblade.com",
-// 		 "messagingUrl": "INSTANCE.clearblade.com:1883",
-// 		 "registrationKey": "some-registration-key",
-// 		 "systemKey": "abc123abc123abc123abc123abc123",
-// 	     "systemSecret": "ABC123ABC123ABC123ABC123ABC123",
-// 		 "developer": {
-// 	  	   "email": "some-email@email.com",
-// 	  	   "password": "some-password"
-// 		  }
+//       "platformUrl": "https://INSTANCE.clearblade.com",
+//       "messagingUrl": "INSTANCE.clearblade.com:1883",
+//       "registrationKey": "some-registration-key",
+//       "systemKey": "abc123abc123abc123abc123abc123",
+//       "systemSecret": "ABC123ABC123ABC123ABC123ABC123",
+//       "developer": {
+//         "email": "some-email@email.com",
+//         "password": "some-password"
+//       }
 //     }
 //
 // Flags

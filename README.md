@@ -27,12 +27,18 @@
 
 ## Examples
 
-They are located under the [examples/](examples/) folder. You can run any of
+They are located under the [examples](examples/) folder. You can run any of
 them like follows:
 
 ```bash
 go test -v ./examples/[EXAMPLE FOLDER]
 ```
+
+## Wiki
+
+[wiki]: https://github.com/ClearBlade/cbtest/wiki
+
+Please refer to our [wiki][wiki] for more details regarding `cbtest`.
 
 ## References
 

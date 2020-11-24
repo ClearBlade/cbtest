@@ -27,7 +27,7 @@
 //
 // Polymorphic destroying and saving
 //
-// To avoid having to change the test code each time we want to destroy and/dor
+// To avoid having to change the test code each time we want to destroy and/or
 // save a system, the Close function will take care of deciding what to do based
 // on the provided configuration and flags:
 //

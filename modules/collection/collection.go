@@ -1,3 +1,5 @@
+// Package collection contains functions and assertions for interacting with
+// collections.
 package collection
 
 import (

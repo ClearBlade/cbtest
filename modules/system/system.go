@@ -1,3 +1,38 @@
+// Package system contains functions using, importing, saving, and destroying
+// systems. Each tests usually consists of use/create and close/destroy operations,
+// this module makes that easier.
+//
+// Using existing systems
+//
+// Either Use or UseOrImport (when system info is provided in the config or the
+// flags) will return a reference to an existing system.
+//
+// Importing into new system
+//
+// Either Import or UseOrImport (when no system info is provided) will import and
+// return a reference to the new system.
+//
+// Destroying systems
+//
+// Destroy will destroy the system when called, therefore, is mostly useful when
+// used together with a defer statement:
+//
+//     defer system.Destroy(t, s)
+//
+// Saving systems
+//
+// Save will create write a config file with the system info in it for later use:
+//
+//     defer system.Save(t, s)
+//
+// Polymorphic destroying and saving
+//
+// To avoid having to change the test code each time we want to destroy and/dor
+// save a system, the Close function will take care of deciding what to do based
+// on the provided configuration and flags:
+//
+//     defer system.Close(t, s)
+//
 package system
 
 import (

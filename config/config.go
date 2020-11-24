@@ -1,3 +1,30 @@
+// Package config contains the structures, flags, and parsing of the cbtest
+// configuration. Note that configuration is optional, and can be passed
+// either using a config file or command line flags (with the latter taking
+// precedence over the former).
+//
+// Configuration file
+//
+// A minimal configuration file looks like follows:
+//
+//     {
+// 	     "platformUrl": "https://INSTANCE.clearblade.com",
+// 		 "messagingUrl": "INSTANCE.clearblade.com:1883",
+// 		 "registrationKey": "some-registration-key",
+// 		 "systemKey": "abc123abc123abc123abc123abc123",
+// 	     "systemSecret": "ABC123ABC123ABC123ABC123ABC123",
+// 		 "developer": {
+// 	  	   "email": "some-email@email.com",
+// 	  	   "password": "some-password"
+// 		  }
+//     }
+//
+// Flags
+//
+// Since cbtest integrates with go test, flags can be specified as follows:
+//
+//     go test -v <PATH-TO-TEST> -args -cbtest.config <PATH-TO-CONFIG> [-cbtest.*]
+//
 package config
 
 import (

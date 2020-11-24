@@ -1,3 +1,4 @@
+// Package merge contains functions for merging folders and files.
 package merge
 
 import (

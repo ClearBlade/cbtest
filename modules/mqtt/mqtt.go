@@ -1,3 +1,5 @@
+// Package mqtt contains functions and assertions for interacting with mqtt
+// related interactions (initializing, publishing, etc).
 package mqtt
 
 import (

@@ -2,6 +2,7 @@ package config
 
 import (
 	"flag"
+	"strings"
 
 	"github.com/clearblade/cbtest/internal/fsutil"
 )
@@ -82,7 +83,7 @@ func HasConfig() bool {
 	return FlagFound("cbtest.config") || fsutil.IsFile(ConfigPath())
 }
 
-// ConfigOut returns the value given to the `-cbtest.config` flag.
+// ConfigOut returns the value given to the `-cbtest.config-out` flag.
 func ConfigOut() string {
 	if flagConfigOut == nil {
 		panic("ConfigOut called before init")
@@ -93,6 +94,12 @@ func ConfigOut() string {
 	}
 
 	return *flagConfigOut
+}
+
+// HasConfigOut returns true if the user passed the `-cbtest.config-out` flag.
+func HasConfigOut() bool {
+	configOut := ConfigOut()
+	return strings.TrimSpace(configOut) != ""
 }
 
 // PlatformURL returns the value given to the `-cbtest.platform-url` flag.

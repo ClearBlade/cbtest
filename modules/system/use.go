@@ -56,7 +56,7 @@ func UseWithConfigE(t cbtest.T, provider provider.Config) (*EphemeralSystem, err
 		return nil, fmt.Errorf("external system configuration did not specify a system key or secret")
 	}
 
-	system := NewExternalSystem(config)
+	system := newExternalSystem(config)
 	t.Logf("Using existing system")
 	t.Logf("System URL: %s", system.RemoteURL())
 	return system, nil

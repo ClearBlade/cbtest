@@ -25,15 +25,15 @@ func Finish(t cbtest.T, s *EphemeralSystem) {
 func FinishE(t cbtest.T, s *EphemeralSystem) error {
 
 	if s.IsExternal() {
-		t.Log("Close: closing external system")
+		t.Log("Finish: closing external system")
 		return nil
 
 	} else if config.HasConfigOut() {
-		t.Log("Close: saving system")
+		t.Log("Finish: saving system")
 		return config.SaveConfig(t, s.config)
 
 	} else {
-		t.Log("Close: destroying system")
+		t.Log("Finish: destroying system")
 		return DestroyE(t, s)
 	}
 }

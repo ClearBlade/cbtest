@@ -84,7 +84,7 @@ func ImportWithConfigE(t cbtest.T, provider provider.Config, systemPath string, 
 
 	// our imported system root will be at a temporary directory
 	tempdir, cleanupLocal := fsutil.MakeTempDir()
-	system := NewImportedSystem(config, tempdir)
+	system := newImportedSystem(config, tempdir)
 
 	// the system paths that are gonna be merged into the temporary directory
 	mergePaths := make([]string, 0, 1+len(extraPaths))

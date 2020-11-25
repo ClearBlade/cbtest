@@ -28,10 +28,10 @@
 // Polymorphic destroying and saving
 //
 // To avoid having to change the test code each time we want to destroy and/or
-// save a system, the Close function will take care of deciding what to do based
+// save a system, the Finish function will take care of deciding what to do based
 // on the provided configuration and flags:
 //
-//     defer system.Close(t, s)
+//     defer system.Finish(t, s)
 //
 package system
 
@@ -53,8 +53,8 @@ type EphemeralSystem struct {
 	clientLock sync.Mutex
 }
 
-// NewImportedSystem creates a new *EphemeralSystem from an imported system.
-func NewImportedSystem(config *config.Config, localPath string) *EphemeralSystem {
+// newImportedSystem creates a new *EphemeralSystem from an imported system.
+func newImportedSystem(config *config.Config, localPath string) *EphemeralSystem {
 	return &EphemeralSystem{
 		config:     config,
 		localPath:  localPath,
@@ -62,8 +62,8 @@ func NewImportedSystem(config *config.Config, localPath string) *EphemeralSystem
 	}
 }
 
-// NewExternalSystem creates anew *EphemeralSystem from an external system.
-func NewExternalSystem(config *config.Config) *EphemeralSystem {
+// newExternalSystem creates anew *EphemeralSystem from an external system.
+func newExternalSystem(config *config.Config) *EphemeralSystem {
 	return &EphemeralSystem{
 		config:     config,
 		localPath:  "",

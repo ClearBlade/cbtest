@@ -28,6 +28,19 @@ func ExamplePath() {
 	// foo
 }
 
+func ExamplePathI() {
+	m := map[string]interface{}{
+		"nested": map[string]interface{}{
+			"value": "bar",
+		},
+	}
+
+	value := PathI(testingT, m, "NESted.VALue")
+	fmt.Println(value)
+	// Output:
+	// bar
+}
+
 func TestPathE_ValidPathSucceeds(t *testing.T) {
 
 	m := map[string]interface{}{

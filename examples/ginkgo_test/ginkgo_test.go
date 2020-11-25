@@ -52,7 +52,7 @@ var _ = Describe("Adder test", func() {
 	AfterSuite(func() {
 
 		// close the system after the test
-		system.Close(T(), s)
+		system.Finish(T(), s)
 
 	})
 

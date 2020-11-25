@@ -23,7 +23,7 @@ func TestSystemMerge(t *testing.T) {
 	s := system.UseOrImport(t, "./foo_extra", "./bar_extra")
 
 	// close the system after the test
-	defer system.Close(t, s)
+	defer system.Finish(t, s)
 
 	// obtain developer client from the ephemeral system
 	devClient := auth.LoginAsDev(t, s)

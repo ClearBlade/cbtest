@@ -48,7 +48,7 @@ func TestStreaming(t *testing.T) {
 	s := system.UseOrImport(t, "./extra")
 
 	// close the system after the test
-	defer system.Close(t, s)
+	defer system.Finish(t, s)
 
 	// obtain developer client from the ephemeral system
 	devClient := auth.LoginAsDev(t, s)

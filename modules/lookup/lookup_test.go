@@ -1,11 +1,32 @@
 package lookup
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/clearblade/cbtest/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+var testingT = &mocks.T{}
+
+func init() {
+	testingT.On("Helper").Return()
+}
+
+func ExamplePath() {
+	m := map[string]interface{}{
+		"nested": map[string]interface{}{
+			"value": "foo",
+		},
+	}
+
+	value := Path(testingT, m, "nested.value")
+	fmt.Println(value)
+	// Output:
+	// foo
+}
 
 func TestPathE_ValidPathSucceeds(t *testing.T) {
 

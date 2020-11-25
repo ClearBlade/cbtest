@@ -58,6 +58,9 @@ func UseWithConfigE(t cbtest.T, provider provider.Config) (*EphemeralSystem, err
 
 	system := newExternalSystem(config)
 	t.Logf("Using existing system")
+	t.Logf("Platform URL: %s", system.PlatformURL())
+	t.Logf("Messaging URL: %s", system.MessagingURL())
+	t.Logf("System key: %s", system.SystemKey())
 	t.Logf("System URL: %s", system.RemoteURL())
 	return system, nil
 }

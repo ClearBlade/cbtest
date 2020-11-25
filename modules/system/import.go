@@ -113,6 +113,9 @@ func ImportWithConfigE(t cbtest.T, provider provider.Config, systemPath string, 
 	}
 
 	t.Log("Import successful")
+	t.Logf("Platform URL: %s", system.PlatformURL())
+	t.Logf("Messaging URL: %s", system.MessagingURL())
+	t.Logf("System key: %s", system.SystemKey())
 	t.Logf("System URL: %s", system.RemoteURL())
 	return system, nil
 }

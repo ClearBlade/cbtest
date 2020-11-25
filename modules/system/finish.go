@@ -22,17 +22,15 @@ func Finish(t cbtest.T, s *EphemeralSystem) {
 // to be saved for later use.
 // Returns error on failure.
 func FinishE(t cbtest.T, s *EphemeralSystem) error {
+	t.Helper()
 
 	if s.IsExternal() {
-		t.Log("Finish: closing external system")
 		return nil
 
 	} else if s.config.ShouldSave() {
-		t.Log("Finish: saving system")
 		return SaveE(t, s)
 
 	} else {
-		t.Log("Finish: destroying system")
 		return DestroyE(t, s)
 	}
 }

@@ -71,12 +71,6 @@ func newExternalSystem(config *config.Config) *EphemeralSystem {
 	}
 }
 
-// Provide returns the config that was used for creating this system. This
-// function implements the config.Provider interface.
-func (es *EphemeralSystem) Provide() *config.Config {
-	return es.config
-}
-
 // PlatformURL returns the platform url that hosts this system.
 func (es *EphemeralSystem) PlatformURL() string {
 	return es.config.PlatformURL

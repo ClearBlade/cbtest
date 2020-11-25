@@ -18,5 +18,6 @@ func Save(t cbtest.T, system *EphemeralSystem) {
 // Returns error on failure.
 func SaveE(t cbtest.T, system *EphemeralSystem) error {
 	t.Helper()
-	return config.SaveConfig(t, system.config)
+	_, err := config.SaveConfig(t, system.config)
+	return err
 }

@@ -1,3 +1,5 @@
+// Package npm exposes a simple set of functions for running npm install
+// and other npm scripts in a given project.
 package npm
 
 import (

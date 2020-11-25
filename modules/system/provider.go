@@ -15,13 +15,6 @@ func (es *EphemeralSystem) Config(t cbtest.T) *config.Config {
 	return es.config.Config(t)
 }
 
-// ConfigE returns the config that was used for creating this system. This
-// function implements the provider.Config interface.
-// Returns error on failure.
-func (es *EphemeralSystem) ConfigE(t cbtest.T) (*config.Config, error) {
-	return es.config.ConfigE(t)
-}
-
 // Client returns a dev client that can be used for accessing this system. This
 // function implements the provider.Client interface.
 // Panics on failure.

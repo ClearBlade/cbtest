@@ -2,7 +2,6 @@ package system
 
 import (
 	"github.com/clearblade/cbtest"
-	"github.com/clearblade/cbtest/config"
 	"github.com/stretchr/testify/require"
 )
 
@@ -28,9 +27,9 @@ func FinishE(t cbtest.T, s *EphemeralSystem) error {
 		t.Log("Finish: closing external system")
 		return nil
 
-	} else if config.HasConfigOut() {
+	} else if s.config.ShouldSave() {
 		t.Log("Finish: saving system")
-		return config.SaveConfig(t, s.config)
+		return SaveE(t, s)
 
 	} else {
 		t.Log("Finish: destroying system")

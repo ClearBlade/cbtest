@@ -58,6 +58,7 @@ type Config struct {
 	User            *User      `json:"user,omitempty" mapstructre:"user"`
 	Device          *Device    `json:"device,omitempty" mapstructure:"device"`
 	Import          *Import    `json:"import,omitempty" mapstructure:"import"`
+	Out             string     `json:"-" mapstructure:"-"`
 }
 
 // Developer contains the developer credentials that must be provided if using
@@ -106,6 +107,7 @@ func GetDefaultConfig() *Config {
 			ActiveKey: "cbtestpassword",
 		},
 		Import: &Import{},
+		Out:    "",
 	}
 }
 
@@ -146,7 +148,11 @@ func WriteConfigToPath(path string, c *Config) error {
 // WriteConfig writes the config to the given writer.
 func WriteConfig(w io.Writer, c *Config) error {
 
-	err := json.NewEncoder(w).Encode(c)
+	twoSpaces := "  "
+	enc := json.NewEncoder(w)
+	enc.SetIndent("", twoSpaces)
+
+	err := enc.Encode(c)
 	if err != nil {
 		return err
 	}
@@ -179,26 +185,33 @@ func ObtainConfig(t cbtest.T) (*Config, error) {
 	return config, nil
 }
 
-// SaveConfig saves the config to disk. It uses either (1) the config out flag
-// if provided, or (2) the default path given in the parameter.
-func SaveConfig(t cbtest.T, c *Config) error {
+// SaveConfig saves the config to disk. It uses either (1) the config Out field
+// if provided, or (2) a default path constructed from the given test object.
+// Returns the output path and an error (if any).
+func SaveConfig(t cbtest.T, c *Config) (string, error) {
 	t.Helper()
 
 	var err error
 
-	outputPath := ConfigOut()
+	outputPath := c.Out
 	if strings.TrimSpace(outputPath) == "" {
-		timestamp := time.Now().UTC().Unix()
-		outputPath = fmt.Sprintf("cbtest-%s-%d.json", t.Name(), timestamp)
+		outputPath = generateOutputName(t)
 	}
 
 	t.Logf("Saving config to: %s", outputPath)
 	err = WriteConfigToPath(outputPath, c)
 	if err != nil {
-		return fmt.Errorf("could not save config: %s", err)
+		return "", fmt.Errorf("could not save config: %s", err)
 	}
 
-	return nil
+	return outputPath, nil
+}
+
+// generateOutputName generates an suitable output name for the config based
+// on the test information
+func generateOutputName(t cbtest.T) string {
+	timestamp := time.Now().UTC().Unix()
+	return fmt.Sprintf("cbtest-%s-%d.json", t.Name(), timestamp)
 }
 
 func (c *Config) overrideFromFlags() {
@@ -215,6 +228,7 @@ func (c *Config) overrideFromFlags() {
 	c.User.Password = useOrDefault(UserPassword(), c.User.Password)
 	c.Device.Name = useOrDefault(DeviceName(), c.Device.Name)
 	c.Device.ActiveKey = useOrDefault(DeviceActiveKey(), c.Device.ActiveKey)
+	c.Out = useOrDefault(ConfigOut(), c.Out)
 
 	// NOTE: let the boolean flag decide the value
 	c.Import.ImportUsers = ShouldImportUsers()
@@ -224,11 +238,6 @@ func (c *Config) overrideFromFlags() {
 // Config returns a *Config instance.
 func (c *Config) Config(cbtest.T) *Config {
 	return c
-}
-
-// ConfigE returns a *Config instance.
-func (c *Config) ConfigE(cbtest.T) (*Config, error) {
-	return c, nil
 }
 
 // HasSystem returns true if the given config has system information.
@@ -249,4 +258,10 @@ func (c *Config) HasUser() bool {
 // HasDevice returns true if the given config has device information.
 func (c *Config) HasDevice() bool {
 	return c.Device != nil && c.Device.Name != "" && c.Device.ActiveKey != ""
+}
+
+// ShouldSave returns true if the out field of config is not empty (meaning the
+// user to save the config to the specified path).
+func (c *Config) ShouldSave() bool {
+	return strings.TrimSpace(c.Out) != ""
 }

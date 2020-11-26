@@ -19,6 +19,7 @@ import (
 // Path performs a lookup into the given value using a string path.
 // Panics on failure.
 func Path(t cbtest.T, i interface{}, path string) interface{} {
+	t.Helper()
 	res, err := PathE(t, i, path)
 	require.NoError(t, err)
 	return res
@@ -27,6 +28,7 @@ func Path(t cbtest.T, i interface{}, path string) interface{} {
 // PathE performs a lookup into the given value using a string path.
 // Returns error on failure.
 func PathE(t cbtest.T, i interface{}, path string) (interface{}, error) {
+	t.Helper()
 	value, err := lookup.LookupString(i, path)
 	if err != nil {
 		return nil, err
@@ -37,6 +39,7 @@ func PathE(t cbtest.T, i interface{}, path string) (interface{}, error) {
 // PathI performs a lookup into the given value using a case-insensitive string path.
 // Panics on failure.
 func PathI(t cbtest.T, i interface{}, path string) interface{} {
+	t.Helper()
 	res, err := PathIE(t, i, path)
 	require.NoError(t, err)
 	return res
@@ -45,6 +48,7 @@ func PathI(t cbtest.T, i interface{}, path string) interface{} {
 // PathIE performs a lookup into the given value using a case-insensitive string path.
 // Returns error on failure.
 func PathIE(t cbtest.T, i interface{}, path string) (interface{}, error) {
+	t.Helper()
 	value, err := lookup.LookupStringI(i, path)
 	if err != nil {
 		return nil, err

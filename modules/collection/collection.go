@@ -14,6 +14,7 @@ import (
 // IDByName gets a collection ID from a given name.
 // Panics on failure.
 func IDByName(t cbtest.T, provider provider.ConfigAndClient, collectionName string) string {
+	t.Helper()
 	id, err := IDByNameE(t, provider, collectionName)
 	require.NoError(t, err)
 	return id
@@ -22,6 +23,7 @@ func IDByName(t cbtest.T, provider provider.ConfigAndClient, collectionName stri
 // IDByNameE gets a collection ID from a given name.
 // Returns error on failure.
 func IDByNameE(t cbtest.T, provider provider.ConfigAndClient, collectionName string) (string, error) {
+	t.Helper()
 
 	config := provider.Config(t)
 	devClient, err := provider.ClientE(t)
@@ -62,6 +64,7 @@ func IDByNameE(t cbtest.T, provider provider.ConfigAndClient, collectionName str
 // Total returns the total number of rows in the collection.
 // Panics on failure.
 func Total(t cbtest.T, provider provider.ConfigAndClient, collectionID string) int {
+	t.Helper()
 	count, err := TotalE(t, provider, collectionID)
 	require.NoError(t, err)
 	return count
@@ -70,6 +73,7 @@ func Total(t cbtest.T, provider provider.ConfigAndClient, collectionID string) i
 // TotalE returns the total number of rows in the collection.
 // Returns error on failure.
 func TotalE(t cbtest.T, provider provider.ConfigAndClient, collectionID string) (int, error) {
+	t.Helper()
 
 	devClient, err := provider.ClientE(t)
 	if err != nil {

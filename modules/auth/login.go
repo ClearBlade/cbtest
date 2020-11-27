@@ -23,7 +23,12 @@ func LoginAsDev(t cbtest.T, provider provider.Config) *cb.DevClient {
 // Returns error on failure.
 func LoginAsDevE(t cbtest.T, provider provider.Config) (*cb.DevClient, error) {
 	t.Helper()
+
 	config := provider.Config(t)
+	if !config.HasDeveloper() {
+		return nil, fmt.Errorf("config does not have developer information")
+	}
+
 	return LoginDevE(t, provider, config.Developer.Email, config.Developer.Password)
 }
 
@@ -45,15 +50,10 @@ func LoginDevE(t cbtest.T, provider provider.Config, email, password string) (*c
 
 func cbLoginDev(t cbtest.T, provider provider.Config, email, password string) (*cb.DevClient, error) {
 
-	var err error
 	config := provider.Config(t)
 
-	if !config.HasDeveloper() {
-		return nil, fmt.Errorf("config does not have developer information")
-	}
-
 	devClient := cb.NewDevClientWithAddrs(config.PlatformURL, config.MessagingURL, email, password)
-	_, err = devClient.Authenticate()
+	_, err := devClient.Authenticate()
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,12 @@ func LoginAsUser(t cbtest.T, provider provider.Config) *cb.UserClient {
 // Returns error on failure.
 func LoginAsUserE(t cbtest.T, provider provider.Config) (*cb.UserClient, error) {
 	t.Helper()
+
 	config := provider.Config(t)
+	if !config.HasUser() {
+		return nil, fmt.Errorf("config does not have user information")
+	}
+
 	return LoginUserE(t, provider, config.User.Email, config.User.Password)
 }
 
@@ -97,10 +102,6 @@ func LoginUserE(t cbtest.T, provider provider.Config, email, password string) (*
 func cbLoginUser(t cbtest.T, provider provider.Config, email, password string) (*cb.UserClient, error) {
 
 	config := provider.Config(t)
-
-	if !config.HasUser() {
-		return nil, fmt.Errorf("config does not have user information")
-	}
 
 	userClient := cb.NewUserClientWithAddrs(config.PlatformURL, config.MessagingURL, config.SystemKey, config.SystemSecret, email, password)
 	_, err := userClient.Authenticate()
@@ -125,7 +126,12 @@ func LoginAsDevice(t cbtest.T, provider provider.Config) *cb.DeviceClient {
 // Returns error on failure.
 func LoginAsDeviceE(t cbtest.T, provider provider.Config) (*cb.DeviceClient, error) {
 	t.Helper()
+
 	config := provider.Config(t)
+	if !config.HasDevice() {
+		return nil, fmt.Errorf("config does not have device information")
+	}
+
 	return LoginDeviceE(t, provider, config.Device.Name, config.Device.ActiveKey)
 }
 
@@ -148,10 +154,6 @@ func LoginDeviceE(t cbtest.T, provider provider.Config, name, activeKey string) 
 func cbLoginDevice(t cbtest.T, provider provider.Config, name, activeKey string) (*cb.DeviceClient, error) {
 
 	config := provider.Config(t)
-
-	if !config.HasDevice() {
-		return nil, fmt.Errorf("config does not have device information")
-	}
 
 	deviceClient := cb.NewDeviceClientWithAddrs(config.PlatformURL, config.MessagingURL, config.SystemKey, config.SystemSecret, name, activeKey)
 	_, err := deviceClient.Authenticate()

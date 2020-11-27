@@ -788,6 +788,9 @@ MigrationBackup/
 
 ### CUSTOM ###
 
+# snippets
+!.vscode/*.code-snippets
+
 # generated config files
 cbtest-*-[0-9]*.json
 

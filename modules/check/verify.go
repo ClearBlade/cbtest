@@ -10,7 +10,7 @@ import (
 func Verify(t cbtest.T, actual interface{}, matcher Matcher) {
 	t.Helper()
 	res := VerifyE(t, actual, matcher)
-	require.True(t, res)
+	require.True(t, res, "Verify failed")
 }
 
 // VerifyE checks whenever the given actual value passes the matcher.

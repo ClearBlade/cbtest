@@ -41,5 +41,4 @@ func TestSystemMerge(t *testing.T) {
 
 	// assert response from service
 	service.AssertResponseEqual(t, "bar", bar)
-
 }

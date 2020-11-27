@@ -1,21 +1,18 @@
 package check
 
 import (
-	"fmt"
+	"testing"
 
 	"github.com/clearblade/cbtest/mocks"
+	"github.com/stretchr/testify/assert"
 )
 
-var testingT = &mocks.T{}
+func TestAnything(t *testing.T) {
 
-func init() {
-	testingT.On("Helper").Return()
-}
+	mockT := &mocks.T{}
+	mockT.On("Helper").Return()
 
-func ExampleAnything() {
-	fmt.Println(VerifyE(testingT, 0, Anything()))
-	fmt.Println(VerifyE(testingT, "foo", Anything()))
-	// Output:
-	// true
-	// true
+	assert.True(t, VerifyE(mockT, nil, Anything()))
+	assert.True(t, VerifyE(mockT, 0, Anything()))
+	assert.True(t, VerifyE(mockT, "foo", Anything()))
 }

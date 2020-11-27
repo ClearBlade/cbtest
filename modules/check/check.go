@@ -28,4 +28,12 @@
 //     ...or
 //     check.Verify(t, ACTUAL, check.Not(MATCHER))
 //
+// Using with Gomega
+//
+// Any of the Gomega matchers should work fine:
+//
+//     ...
+//     check.Verify(t, 10, gomega.BeNumerically(">", 5)) // true
+//     ...
+//
 package check

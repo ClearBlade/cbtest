@@ -1,28 +1,23 @@
 package check_test
 
 import (
-	"fmt"
+	"testing"
 
 	"github.com/onsi/gomega"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
 	"github.com/clearblade/cbtest/mocks"
 	"github.com/clearblade/cbtest/modules/check"
 )
 
-var testingT = &mocks.T{}
+func TestVerify_WithGomega(t *testing.T) {
 
-func init() {
-	testingT.On("Helper").Return()
-	testingT.On("Errorf", mock.Anything, mock.Anything).Return()
-}
+	mockT := &mocks.T{}
+	mockT.On("Helper").Return()
+	mockT.On("Errorf", mock.Anything, mock.Anything).Return()
 
-func ExampleVerify_withGomega() {
-	fmt.Println(check.VerifyE(testingT, 10, gomega.BeNumerically(">", 5)))
-	fmt.Println(check.VerifyE(testingT, 10, gomega.BeNumerically("==", 10)))
-	fmt.Println(check.VerifyE(testingT, 10, gomega.BeNumerically(">", 15)))
-	// Output:
-	// true
-	// true
-	// false
+	assert.True(t, check.VerifyE(mockT, 10, gomega.BeNumerically(">", 5)))
+	assert.True(t, check.VerifyE(mockT, 10, gomega.BeNumerically("==", 10)))
+	assert.False(t, check.VerifyE(mockT, 10, gomega.BeNumerically(">", 15)))
 }

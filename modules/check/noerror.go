@@ -10,7 +10,6 @@ func NoError(t cbtest.T, err interface{}) {
 	t.Helper()
 	res := NoErrorE(t, err)
 	if !res {
-		t.Errorf("Received unexpected error: %s", err)
 		t.FailNow()
 	}
 }

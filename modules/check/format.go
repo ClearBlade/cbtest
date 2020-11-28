@@ -11,3 +11,8 @@ func FormatMessage(actual interface{}, message string, expected ...interface{}) 
 func FormatMessageWithDiff(actual, message, expected string) string {
 	return format.MessageWithDiff(actual, message, expected)
 }
+
+// FormatObject returns the object paramter as a formatted string.
+func FormatObject(object interface{}, indentation uint) string {
+	return format.Object(object, indentation)
+}

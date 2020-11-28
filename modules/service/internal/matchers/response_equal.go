@@ -11,53 +11,53 @@ import (
 type ServiceResponseMatcher struct {
 	ExpectedSuccess bool
 	ExpectedResults interface{}
-	isResponse      bool
 	success         bool
 	results         interface{}
+	matcher         check.Matcher
 }
 
 // Match returns true if actual matches the expected response.
 func (sr *ServiceResponseMatcher) Match(actual interface{}) (bool, error) {
 
+	var ok bool
+
 	resp, ok := actual.(map[string]interface{})
 	if !ok {
-		return false, fmt.Errorf("could not handle actual type (%T)", actual)
+		return false, fmt.Errorf("actual must have type map[string]interface{}")
 	}
 
-	sr.success, sr.isResponse = resp["success"].(bool)
-	sr.results, _ = resp["results"]
-
-	if !sr.isResponse || sr.success != sr.ExpectedSuccess {
+	sr.success, ok = resp["success"].(bool)
+	if !ok {
 		return false, nil
 	}
 
-	matcher, ok := sr.ExpectedResults.(check.Matcher)
-	if ok {
-		return matcher.Match(sr.results)
+	sr.results, ok = resp["results"]
+	if !ok {
+		return false, nil
 	}
-	return check.Equal(sr.ExpectedResults).Match(sr.results)
+
+	if sr.success != sr.ExpectedSuccess {
+		return false, nil
+	}
+
+	sr.matcher, ok = sr.ExpectedResults.(check.Matcher)
+	if !ok {
+		sr.matcher = check.Equal(sr.ExpectedResults)
+	}
+
+	return sr.matcher.Match(sr.results)
 }
 
 // FailureMessage returns the failure message.
 func (sr *ServiceResponseMatcher) FailureMessage(actual interface{}) string {
-	switch {
-	case !sr.isResponse:
-		return check.FormatMessage(actual, "to be a service response")
-	case sr.success != sr.ExpectedSuccess:
-		return check.FormatMessage(actual, "to have success as", sr.ExpectedSuccess)
-	default:
-		return check.FormatMessage(sr.results, "to have results matching", sr.ExpectedResults)
-	}
+	return check.FormatMessage(sr.formatState(sr.success, sr.results), "to match", sr.formatState(sr.ExpectedSuccess, sr.ExpectedResults))
 }
 
 // NegatedFailureMessage returns the negated failure message.
 func (sr *ServiceResponseMatcher) NegatedFailureMessage(actual interface{}) string {
-	switch {
-	case !sr.isResponse:
-		return check.FormatMessage(actual, "to be a service response")
-	case sr.success != sr.ExpectedSuccess:
-		return check.FormatMessage(actual, "to have success as", sr.ExpectedSuccess)
-	default:
-		return check.FormatMessage(sr.results, "to have results not matching", sr.ExpectedResults)
-	}
+	return check.FormatMessage(sr.formatState(sr.success, sr.results), "not to match", sr.formatState(sr.ExpectedSuccess, sr.ExpectedResults))
+}
+
+func (sr *ServiceResponseMatcher) formatState(success bool, results interface{}) string {
+	return fmt.Sprintf("ServiceResponse<success: %t, results: %#v>", success, results)
 }

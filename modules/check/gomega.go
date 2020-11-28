@@ -7,7 +7,7 @@ import (
 
 // Matchers re-exported from gomega (alphabetical order)
 
-// All checks whenever actual satifies all the passed matchers.
+// All checks whenever actual satisfies all the passed matchers.
 func All(matchers ...Matcher) Matcher {
 	gmatchers := make([]types.GomegaMatcher, 0, len(matchers))
 	for _, matcher := range matchers {
@@ -16,7 +16,7 @@ func All(matchers ...Matcher) Matcher {
 	return gomega.SatisfyAll(gmatchers...)
 }
 
-// Any checks whenever actual satifies any of the passed matchers.
+// Any checks whenever actual satisfies any of the passed matchers.
 func Any(matchers ...Matcher) Matcher {
 	gmatchers := make([]types.GomegaMatcher, 0, len(matchers))
 	for _, matcher := range matchers {

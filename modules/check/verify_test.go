@@ -11,11 +11,22 @@ import (
 	"github.com/clearblade/cbtest/modules/check"
 )
 
-func TestVerify_WithGomega(t *testing.T) {
+func TestVerify(t *testing.T) {
+
+	s := []string{"foo", "bar", "baz"}
 
 	mockT := &mocks.T{}
 	mockT.On("Helper").Return()
 	mockT.On("Errorf", mock.Anything, mock.Anything).Return()
+
+	assert.True(t, check.VerifyE(mockT, s, check.ConsistOf("baz", "bar", "foo"))) // ordering doesn't matter
+}
+
+func TestVerify_WithGomega(t *testing.T) {
+
+	mockT := &mocks.T{}
+	mockT.On("Helper").Return()
+	mockT.On("Errorf", mock.Anything, mock.Anything, mock.Anything).Return()
 
 	assert.True(t, check.VerifyE(mockT, 10, gomega.BeNumerically(">", 5)))
 	assert.True(t, check.VerifyE(mockT, 10, gomega.BeNumerically("==", 10)))

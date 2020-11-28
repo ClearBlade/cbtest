@@ -6,10 +6,9 @@ package npm_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/clearblade/cbtest/contrib/npm"
 	"github.com/clearblade/cbtest/modules/auth"
+	"github.com/clearblade/cbtest/modules/check"
 	"github.com/clearblade/cbtest/modules/service"
 	"github.com/clearblade/cbtest/modules/system"
 )
@@ -35,8 +34,8 @@ func TestNPMBasedSystem(t *testing.T) {
 	// call the service
 	data := map[string]interface{}{"name": "npm!"}
 	resp, err := devClient.CallService(s.SystemKey(), SayHelloService, data, false)
-	require.NoError(t, err)
+	check.NoError(t, err)
 
 	// assert response from service
-	service.AssertResponseEqual(t, "Hello, npm!", resp)
+	check.Verify(t, resp, service.ResponseSuccess("Hello, npm!"))
 }

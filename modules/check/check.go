@@ -8,6 +8,9 @@
 // defining their own assertions. The Matcher interface is also compatible
 // with Gomega, so any matcher from the latter should work fine.
 //
+// However, some useful matchers are re-exported, so you can access them using
+// check.MATCHER instead of gomega.MATCHER.
+//
 // Usage
 //
 // A matcher is an instance of an object that performs a check. The matcher
@@ -35,5 +38,17 @@
 //     ...
 //     check.Verify(t, 10, gomega.BeNumerically(">", 5)) // true
 //     ...
+//
+// Ordering of expected and actual
+//
+// Early testing frameworks originally used the order EXPECTED-ACTUAL, however,
+// reversing the order to ACTUAL-EXPECTED allows for more fluent and expressive
+// assertions. For instance, writing:
+//
+//     check.Verify(t, roses, gomega.Equal("red"))
+//
+// Reads much better than:
+//
+//     check.Verify(t, gomega.Equal("red"), roses)
 //
 package check

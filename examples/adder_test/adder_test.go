@@ -4,9 +4,8 @@ package adder_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/clearblade/cbtest/modules/auth"
+	"github.com/clearblade/cbtest/modules/check"
 	"github.com/clearblade/cbtest/modules/service"
 	"github.com/clearblade/cbtest/modules/system"
 )
@@ -31,8 +30,8 @@ func TestAdder(t *testing.T) {
 
 	// call the serice
 	resp, err := devClient.CallService(s.SystemKey(), AdderService, payload, false)
-	require.NoError(t, err)
+	check.NoError(t, err)
 
 	// assert response from service
-	service.AssertResponseEqual(t, 7.0, resp)
+	check.Verify(t, resp, service.ResponseSuccess(7.0))
 }

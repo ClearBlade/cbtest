@@ -4,9 +4,8 @@ package hello_world_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/clearblade/cbtest/modules/auth"
+	"github.com/clearblade/cbtest/modules/check"
 	"github.com/clearblade/cbtest/modules/service"
 	"github.com/clearblade/cbtest/modules/system"
 )
@@ -28,8 +27,8 @@ func TestHelloWorld(t *testing.T) {
 
 	// call the service
 	resp, err := devClient.CallService(s.SystemKey(), HelloWorldService, nil, false)
-	require.NoError(t, err)
+	check.NoError(t, err)
 
 	// assert response from service
-	service.AssertResponseEqual(t, "Hello, world!", resp)
+	check.Verify(t, resp, service.ResponseSuccess("Hello, world!"))
 }

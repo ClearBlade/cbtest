@@ -5,9 +5,8 @@ package system_merge_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/clearblade/cbtest/modules/auth"
+	"github.com/clearblade/cbtest/modules/check"
 	"github.com/clearblade/cbtest/modules/service"
 	"github.com/clearblade/cbtest/modules/system"
 )
@@ -30,15 +29,15 @@ func TestSystemMerge(t *testing.T) {
 
 	// call the foo service
 	foo, err := devClient.CallService(s.SystemKey(), FooService, nil, false)
-	require.NoError(t, err)
+	check.NoError(t, err)
 
 	// assert response from service
-	service.AssertResponseEqual(t, "foo", foo)
+	check.Verify(t, foo, service.ResponseSuccess("foo"))
 
 	// call the bar serice
 	bar, err := devClient.CallService(s.SystemKey(), BarService, nil, false)
-	require.NoError(t, err)
+	check.NoError(t, err)
 
 	// assert response from service
-	service.AssertResponseEqual(t, "bar", bar)
+	check.Verify(t, bar, service.ResponseSuccess("bar"))
 }

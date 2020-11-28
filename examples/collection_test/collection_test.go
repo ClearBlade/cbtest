@@ -4,9 +4,8 @@ package collection_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/clearblade/cbtest/modules/auth"
+	"github.com/clearblade/cbtest/modules/check"
 	"github.com/clearblade/cbtest/modules/collection"
 	"github.com/clearblade/cbtest/modules/service"
 	"github.com/clearblade/cbtest/modules/system"
@@ -42,13 +41,17 @@ func TestCollection(t *testing.T) {
 	for _, tt := range table {
 		payload := map[string]interface{}{"lhs": tt.lhs, "rhs": tt.rhs}
 		resp, err := devClient.CallService(s.SystemKey(), AdderService, payload, false)
-		require.NoError(t, err)
-		service.AssertResponseEqual(t, tt.want, resp)
+		check.NoError(t, err)
+		check.Verify(t, resp, service.ResponseSuccess(tt.want))
 	}
 
 	// fetch all collection data
 	collID := collection.IDByName(t, s, ResultsCollection)
 
-	// assert on the collection data
-	collection.AssertHasTotal(t, s, collID, len(table))
+	// fetch data total for the collection
+	dataTotal, err := devClient.GetDataTotal(collID, nil)
+	check.NoError(t, err)
+
+	// assert that the total respose contains expected value
+	check.Verify(t, dataTotal, collection.HaveTotal(len(table)))
 }

@@ -32,12 +32,12 @@ func TestSystemMerge(t *testing.T) {
 	check.NoError(t, err)
 
 	// assert response from service
-	check.Verify(t, foo, service.ResponseSuccess("foo"))
+	check.Expect(t, foo, service.ResponseSuccess("foo"))
 
 	// call the bar serice
 	bar, err := devClient.CallService(s.SystemKey(), BarService, nil, false)
 	check.NoError(t, err)
 
 	// assert response from service
-	check.Verify(t, bar, service.ResponseSuccess("bar"))
+	check.Expect(t, bar, service.ResponseSuccess("bar"))
 }

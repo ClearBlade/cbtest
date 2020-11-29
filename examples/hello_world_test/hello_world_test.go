@@ -30,5 +30,5 @@ func TestHelloWorld(t *testing.T) {
 	check.NoError(t, err)
 
 	// assert response from service
-	check.Verify(t, resp, service.ResponseSuccess("Hello, world!"))
+	check.Expect(t, resp, service.ResponseSuccess("Hello, world!"))
 }

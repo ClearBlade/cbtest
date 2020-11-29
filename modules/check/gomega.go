@@ -107,8 +107,8 @@ func MatchRegexp(regexp string, args ...interface{}) Matcher {
 	return gomega.MatchRegexp(regexp, args...)
 }
 
-// Succeed checks whenever actual is not an error.
-func Succeed() Matcher {
+// Success checks whenever actual is not an error.
+func Success() Matcher {
 	return gomega.Succeed()
 }
 

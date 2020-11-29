@@ -81,5 +81,5 @@ func adderCase(s *system.EphemeralSystem, devClient *cb.DevClient, lhs, rhs, wan
 	Expect(err).To(Succeed())
 
 	// assert response from service
-	check.Verify(T(), resp, service.ResponseSuccess(want))
+	check.Expect(T(), resp, service.ResponseSuccess(want))
 }

@@ -17,5 +17,5 @@ func NoError(t cbtest.T, err interface{}) {
 // NoErrorE checks and returns whenever the given value is not an error.
 func NoErrorE(t cbtest.T, err interface{}) bool {
 	t.Helper()
-	return VerifyE(t, err, Succeed())
+	return ExpectE(t, err, Success())
 }

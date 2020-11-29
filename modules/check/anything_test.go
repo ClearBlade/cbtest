@@ -12,7 +12,7 @@ func TestAnything(t *testing.T) {
 	mockT := &mocks.T{}
 	mockT.On("Helper").Return()
 
-	assert.True(t, VerifyE(mockT, nil, Anything()))
-	assert.True(t, VerifyE(mockT, 0, Anything()))
-	assert.True(t, VerifyE(mockT, "foo", Anything()))
+	assert.True(t, ExpectE(mockT, nil, Anything()))
+	assert.True(t, ExpectE(mockT, 0, Anything()))
+	assert.True(t, ExpectE(mockT, "foo", Anything()))
 }

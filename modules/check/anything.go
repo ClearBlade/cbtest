@@ -7,11 +7,11 @@ func (a *anything) Match(actual interface{}) (bool, error) {
 }
 
 func (a *anything) FailureMessage(actual interface{}) string {
-	return "anything failure"
+	return FormatMessage(actual, "to match anything")
 }
 
 func (a *anything) NegatedFailureMessage(actual interface{}) string {
-	return "negated anything failure"
+	return FormatMessage(actual, "not to match anything")
 }
 
 // Anything returns a matcher that always returns true.

@@ -1,6 +1,6 @@
 // Package check contains miscellaneous assertions and matchers for making the
 // tests more expresive. The package is not named something like assert to avoid
-// collision with existing packages (testify/assert, etc).
+// collision with existing packages.
 //
 // Matcher interface
 //
@@ -17,26 +17,26 @@
 // is usually independent of the actual object being checked. We can apply
 // a matcher to an actual object as follows:
 //
-//     check.Verify(t, ACTUAL, MATCHER)
+//     check.Expect(t, ACTUAL, MATCHER)
 //
 // The code above will fail the test if the ACTUAL object fails the MATCHER. If
 // you don't want to fail the test but instead get a boolean value indicating the
 // result of the check you can do:
 //
-//     check.VerifyE(t, ACTUAL, MATCHER)
+//     check.ExpectE(t, ACTUAL, MATCHER)
 //
 // Negating a check is also possible:
 //
 //     check.Refute(t, ACTUAL, MATCHER)
 //     ...or
-//     check.Verify(t, ACTUAL, check.Not(MATCHER))
+//     check.Expect(t, ACTUAL, check.Not(MATCHER))
 //
 // Using with Gomega
 //
 // Any of the Gomega matchers should work fine:
 //
 //     ...
-//     check.Verify(t, 10, gomega.BeNumerically(">", 5)) // true
+//     check.Expect(t, 10, gomega.BeNumerically(">", 5)) // true
 //     ...
 //
 // Ordering of expected and actual
@@ -45,10 +45,10 @@
 // reversing the order to ACTUAL-EXPECTED allows for more fluent and expressive
 // assertions. For instance, writing:
 //
-//     check.Verify(t, roses, gomega.Equal("red"))
+//     check.Expect(t, roses, gomega.Equal("red"))
 //
 // Reads much better than:
 //
-//     check.Verify(t, gomega.Equal("red"), roses)
+//     check.Expect(t, gomega.Equal("red"), roses)
 //
 package check

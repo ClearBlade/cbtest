@@ -11,7 +11,7 @@ import (
 	"github.com/clearblade/cbtest/modules/check"
 )
 
-func TestVerify(t *testing.T) {
+func TestExpect(t *testing.T) {
 
 	s := []string{"foo", "bar", "baz"}
 
@@ -19,16 +19,16 @@ func TestVerify(t *testing.T) {
 	mockT.On("Helper").Return()
 	mockT.On("Errorf", mock.Anything, mock.Anything).Return()
 
-	assert.True(t, check.VerifyE(mockT, s, check.ConsistOf("baz", "bar", "foo"))) // ordering doesn't matter
+	assert.True(t, check.ExpectE(mockT, s, check.ConsistOf("baz", "bar", "foo"))) // ordering doesn't matter
 }
 
-func TestVerify_WithGomega(t *testing.T) {
+func TestExpect_WithGomega(t *testing.T) {
 
 	mockT := &mocks.T{}
 	mockT.On("Helper").Return()
 	mockT.On("Errorf", mock.Anything, mock.Anything, mock.Anything).Return()
 
-	assert.True(t, check.VerifyE(mockT, 10, gomega.BeNumerically(">", 5)))
-	assert.True(t, check.VerifyE(mockT, 10, gomega.BeNumerically("==", 10)))
-	assert.False(t, check.VerifyE(mockT, 10, gomega.BeNumerically(">", 15)))
+	assert.True(t, check.ExpectE(mockT, 10, gomega.BeNumerically(">", 5)))
+	assert.True(t, check.ExpectE(mockT, 10, gomega.BeNumerically("==", 10)))
+	assert.False(t, check.ExpectE(mockT, 10, gomega.BeNumerically(">", 15)))
 }

@@ -42,16 +42,16 @@ func TestCollection(t *testing.T) {
 		payload := map[string]interface{}{"lhs": tt.lhs, "rhs": tt.rhs}
 		resp, err := devClient.CallService(s.SystemKey(), AdderService, payload, false)
 		check.NoError(t, err)
-		check.Verify(t, resp, service.ResponseSuccess(tt.want))
+		check.Expect(t, resp, service.ResponseSuccess(tt.want))
 	}
 
 	// fetch all collection data
 	collID := collection.IDByName(t, s, ResultsCollection)
 
 	// fetch data total for the collection
-	dataTotal, err := devClient.GetDataTotal(collID, nil)
+	data, err := devClient.GetDataTotal(collID, nil)
 	check.NoError(t, err)
 
 	// assert that the total respose contains expected value
-	check.Verify(t, dataTotal, collection.HaveTotal(len(table)))
+	check.Expect(t, data, collection.HaveTotal(len(table)))
 }

@@ -6,20 +6,19 @@ import (
 	"github.com/clearblade/cbtest"
 )
 
-// Verify checks whenever the given actual value passes the matcher.
-// Panics on failure.
-func Verify(t cbtest.T, actual interface{}, matcher Matcher, labelAndArgs ...interface{}) {
+// Expect checks whenever the given actual value passes the matcher.
+// Panics on failure (just like testify/require).
+func Expect(t cbtest.T, actual interface{}, matcher Matcher, labelAndArgs ...interface{}) {
 	t.Helper()
-	res := VerifyE(t, actual, matcher, labelAndArgs...)
+	res := ExpectE(t, actual, matcher, labelAndArgs...)
 	if !res {
-		t.Error("Verify failed")
 		t.FailNow()
 	}
 }
 
-// VerifyE checks whenever the given actual value passes the matcher.
-// Returns error on failure.
-func VerifyE(t cbtest.T, actual interface{}, matcher Matcher, labelAndArgs ...interface{}) bool {
+// ExpectE checks whenever the given actual value passes the matcher.
+// Returns boolean to indicate success or failure (just like testify/assert).
+func ExpectE(t cbtest.T, actual interface{}, matcher Matcher, labelAndArgs ...interface{}) bool {
 	t.Helper()
 
 	label := buildFailureLabel(labelAndArgs...)
@@ -39,19 +38,20 @@ func VerifyE(t cbtest.T, actual interface{}, matcher Matcher, labelAndArgs ...in
 }
 
 // Refute checks whenever the given actual value fails the matcher.
-// Panics on failure.
+// Panics on failure (just like testify/require).
 func Refute(t cbtest.T, matcher Matcher, actual interface{}, labelAndArgs ...interface{}) {
 	t.Helper()
-	Verify(t, actual, Not(matcher), labelAndArgs...)
+	Expect(t, actual, Not(matcher), labelAndArgs...)
 }
 
 // RefuteE checks whenever the given actual value fails the matcher.
-// Returns error on failure.
+// Returns boolean to indicate success or failure (just like testify/assert).
 func RefuteE(t cbtest.T, matcher Matcher, actual interface{}, labelAndArgs ...interface{}) bool {
 	t.Helper()
-	return VerifyE(t, actual, Not(matcher), labelAndArgs...)
+	return ExpectE(t, actual, Not(matcher), labelAndArgs...)
 }
 
+// buildFailureLabel returns the failure label (if passed).
 func buildFailureLabel(labelAndArgs ...interface{}) string {
 
 	if len(labelAndArgs) == 0 {

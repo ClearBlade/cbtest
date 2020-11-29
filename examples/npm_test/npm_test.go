@@ -37,5 +37,5 @@ func TestNPMBasedSystem(t *testing.T) {
 	check.NoError(t, err)
 
 	// assert response from service
-	check.Verify(t, resp, service.ResponseSuccess("Hello, npm!"))
+	check.Expect(t, resp, service.ResponseSuccess("Hello, npm!"))
 }

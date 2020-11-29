@@ -144,7 +144,7 @@ func checkResults(t *testing.T, s *system.EphemeralSystem, messagesPublished int
 		totalRows := collection.Total(t, s, collID)
 
 		// check the number of rows equals number of messages published
-		check.VerifyE(t, totalRows, check.Equal(messagesPublished), "Collection rows does not match total messages published")
+		check.ExpectE(t, totalRows, check.Equal(messagesPublished), "Collection rows does not match total messages published")
 
 		// logs results
 		t.Logf("Publish duration: %s", *flagDuration)

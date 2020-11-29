@@ -33,5 +33,5 @@ func TestAdder(t *testing.T) {
 	check.NoError(t, err)
 
 	// assert response from service
-	check.Verify(t, resp, service.ResponseSuccess(7.0))
+	check.Expect(t, resp, service.ResponseSuccess(7.0))
 }

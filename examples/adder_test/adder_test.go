@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/clearblade/cbtest/modules/auth"
-	"github.com/clearblade/cbtest/modules/check"
 	"github.com/clearblade/cbtest/modules/service"
+	"github.com/clearblade/cbtest/modules/should"
 	"github.com/clearblade/cbtest/modules/system"
 )
 
@@ -30,8 +30,8 @@ func TestAdder(t *testing.T) {
 
 	// call the service
 	resp, err := devClient.CallService(s.SystemKey(), AdderService, payload, false)
-	check.NoError(t, err)
+	should.NoError(t, err)
 
 	// assert response from service
-	check.Expect(t, resp, service.ResponseSuccess(7.0))
+	should.Expect(t, resp, service.ResponseSuccess(7.0))
 }

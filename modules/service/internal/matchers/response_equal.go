@@ -3,7 +3,9 @@ package matchers
 import (
 	"fmt"
 
-	"github.com/clearblade/cbtest/modules/check"
+	"github.com/clearblade/cbtest/modules/should/format"
+	"github.com/clearblade/cbtest/modules/should/matcher"
+	"github.com/clearblade/cbtest/modules/should/to"
 )
 
 // ServiceResponseMatcher checks that a service response object has the expected
@@ -13,7 +15,7 @@ type ServiceResponseMatcher struct {
 	ExpectedResults interface{}
 	success         bool
 	results         interface{}
-	matcher         check.Matcher
+	matcher         matcher.Matcher
 }
 
 // Match returns true if actual matches the expected response.
@@ -40,9 +42,9 @@ func (sr *ServiceResponseMatcher) Match(actual interface{}) (bool, error) {
 		return false, nil
 	}
 
-	sr.matcher, ok = sr.ExpectedResults.(check.Matcher)
+	sr.matcher, ok = sr.ExpectedResults.(matcher.Matcher)
 	if !ok {
-		sr.matcher = check.Equal(sr.ExpectedResults)
+		sr.matcher = to.Equal(sr.ExpectedResults)
 	}
 
 	return sr.matcher.Match(sr.results)
@@ -50,12 +52,12 @@ func (sr *ServiceResponseMatcher) Match(actual interface{}) (bool, error) {
 
 // FailureMessage returns the failure message.
 func (sr *ServiceResponseMatcher) FailureMessage(actual interface{}) string {
-	return check.FormatMessage(sr.formatState(sr.success, sr.results), "to match", sr.formatState(sr.ExpectedSuccess, sr.ExpectedResults))
+	return format.Message(sr.formatState(sr.success, sr.results), "to match", sr.formatState(sr.ExpectedSuccess, sr.ExpectedResults))
 }
 
 // NegatedFailureMessage returns the negated failure message.
 func (sr *ServiceResponseMatcher) NegatedFailureMessage(actual interface{}) string {
-	return check.FormatMessage(sr.formatState(sr.success, sr.results), "not to match", sr.formatState(sr.ExpectedSuccess, sr.ExpectedResults))
+	return format.Message(sr.formatState(sr.success, sr.results), "not to match", sr.formatState(sr.ExpectedSuccess, sr.ExpectedResults))
 }
 
 func (sr *ServiceResponseMatcher) formatState(success bool, results interface{}) string {

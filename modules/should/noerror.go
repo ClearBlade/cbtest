@@ -1,7 +1,8 @@
-package check
+package should
 
 import (
 	"github.com/clearblade/cbtest"
+	"github.com/clearblade/cbtest/modules/should/to"
 )
 
 // NoError fails the test if the given value is an error. Useful for ensuring
@@ -17,5 +18,5 @@ func NoError(t cbtest.T, err interface{}) {
 // NoErrorE checks and returns whenever the given value is not an error.
 func NoErrorE(t cbtest.T, err interface{}) bool {
 	t.Helper()
-	return ExpectE(t, err, Success())
+	return ExpectE(t, err, to.Success())
 }

@@ -1,14 +1,16 @@
-package check
+package should
 
 import (
 	"fmt"
 
 	"github.com/clearblade/cbtest"
+	"github.com/clearblade/cbtest/modules/should/matcher"
+	"github.com/clearblade/cbtest/modules/should/to"
 )
 
 // Expect checks whenever the given actual value passes the matcher.
 // Panics on failure (just like testify/require).
-func Expect(t cbtest.T, actual interface{}, matcher Matcher, labelAndArgs ...interface{}) {
+func Expect(t cbtest.T, actual interface{}, matcher matcher.Matcher, labelAndArgs ...interface{}) {
 	t.Helper()
 	res := ExpectE(t, actual, matcher, labelAndArgs...)
 	if !res {
@@ -18,7 +20,7 @@ func Expect(t cbtest.T, actual interface{}, matcher Matcher, labelAndArgs ...int
 
 // ExpectE checks whenever the given actual value passes the matcher.
 // Returns boolean to indicate success or failure (just like testify/assert).
-func ExpectE(t cbtest.T, actual interface{}, matcher Matcher, labelAndArgs ...interface{}) bool {
+func ExpectE(t cbtest.T, actual interface{}, matcher matcher.Matcher, labelAndArgs ...interface{}) bool {
 	t.Helper()
 
 	label := buildFailureLabel(labelAndArgs...)
@@ -39,16 +41,16 @@ func ExpectE(t cbtest.T, actual interface{}, matcher Matcher, labelAndArgs ...in
 
 // Refute checks whenever the given actual value fails the matcher.
 // Panics on failure (just like testify/require).
-func Refute(t cbtest.T, matcher Matcher, actual interface{}, labelAndArgs ...interface{}) {
+func Refute(t cbtest.T, matcher matcher.Matcher, actual interface{}, labelAndArgs ...interface{}) {
 	t.Helper()
-	Expect(t, actual, Not(matcher), labelAndArgs...)
+	Expect(t, actual, to.Not(matcher), labelAndArgs...)
 }
 
 // RefuteE checks whenever the given actual value fails the matcher.
 // Returns boolean to indicate success or failure (just like testify/assert).
-func RefuteE(t cbtest.T, matcher Matcher, actual interface{}, labelAndArgs ...interface{}) bool {
+func RefuteE(t cbtest.T, matcher matcher.Matcher, actual interface{}, labelAndArgs ...interface{}) bool {
 	t.Helper()
-	return ExpectE(t, actual, Not(matcher), labelAndArgs...)
+	return ExpectE(t, actual, to.Not(matcher), labelAndArgs...)
 }
 
 // buildFailureLabel returns the failure label (if passed).

@@ -11,8 +11,8 @@ import (
 
 	cb "github.com/clearblade/Go-SDK"
 	"github.com/clearblade/cbtest/modules/auth"
-	"github.com/clearblade/cbtest/modules/check"
 	"github.com/clearblade/cbtest/modules/service"
+	"github.com/clearblade/cbtest/modules/should"
 	"github.com/clearblade/cbtest/modules/system"
 )
 
@@ -81,5 +81,5 @@ func adderCase(s *system.EphemeralSystem, devClient *cb.DevClient, lhs, rhs, wan
 	Expect(err).To(Succeed())
 
 	// assert response from service
-	check.Expect(T(), resp, service.ResponseSuccess(want))
+	should.Expect(T(), resp, service.ResponseSuccess(want))
 }

@@ -13,9 +13,10 @@ import (
 
 	cb "github.com/clearblade/Go-SDK"
 	"github.com/clearblade/cbtest/modules/auth"
-	"github.com/clearblade/cbtest/modules/check"
 	"github.com/clearblade/cbtest/modules/collection"
 	"github.com/clearblade/cbtest/modules/mqtt"
+	"github.com/clearblade/cbtest/modules/should"
+	"github.com/clearblade/cbtest/modules/should/to"
 	"github.com/clearblade/cbtest/modules/system"
 )
 
@@ -53,14 +54,14 @@ func TestStreaming(t *testing.T) {
 
 	// start the service
 	err := devClient.SetLongRunningServiceParams(s.SystemKey(), StreamLoggerService, false, true, *flagInstances)
-	check.NoError(t, err)
+	should.NoError(t, err)
 
 	// ID of the collection
 	collID := collection.IDByName(t, s, MessagesCollection)
 
 	// clears messages collection
 	err = devClient.DeleteData(collID, cb.NewQuery())
-	check.NoError(t, err)
+	should.NoError(t, err)
 
 	// connect each device and publish
 	totalPublishes := devicesConnectAndPublish(t, s)
@@ -119,11 +120,11 @@ func deviceWorker(t *testing.T, s *system.EphemeralSystem, name string) int {
 		// generate message to send
 		message := GenerateMessage()
 		data, err := json.Marshal(message)
-		check.NoError(t, err)
+		should.NoError(t, err)
 
 		// send message
 		err = deviceClient.Publish(MessagesTopic, data, 1)
-		check.NoError(t, err)
+		should.NoError(t, err)
 		messagesPublished++
 
 		// sleep until we can publish again
@@ -144,7 +145,7 @@ func checkResults(t *testing.T, s *system.EphemeralSystem, messagesPublished int
 		totalRows := collection.Total(t, s, collID)
 
 		// check the number of rows equals number of messages published
-		check.ExpectE(t, totalRows, check.Equal(messagesPublished), "Collection rows does not match total messages published")
+		should.ExpectE(t, totalRows, to.Equal(messagesPublished), "Collection rows does not match total messages published")
 
 		// logs results
 		t.Logf("Publish duration: %s", *flagDuration)

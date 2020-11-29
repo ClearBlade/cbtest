@@ -3,8 +3,9 @@ package matchers
 import (
 	"testing"
 
-	"github.com/clearblade/cbtest/modules/check"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/clearblade/cbtest/modules/should/to"
 )
 
 func TestResponseMatcherSucceeds(t *testing.T) {
@@ -32,7 +33,7 @@ func TestResponseMatcher_NoMatch(t *testing.T) {
 
 func TestResponseMatcher_ResultsMatcher(t *testing.T) {
 
-	matcher := &ServiceResponseMatcher{ExpectedSuccess: true, ExpectedResults: check.BeNumerically(">", 5)}
+	matcher := &ServiceResponseMatcher{ExpectedSuccess: true, ExpectedResults: to.BeNumerically(">", 5)}
 
 	actual := map[string]interface{}{"success": true, "results": 9}
 	success, err := matcher.Match(actual)

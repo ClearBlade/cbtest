@@ -1,4 +1,4 @@
-package check
+package matcher
 
 // Matcher defines an interface for matching values. It purposefully mimicks the
 // interface defined by Gomega (for compatibility).

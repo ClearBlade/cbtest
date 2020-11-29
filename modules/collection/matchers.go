@@ -1,15 +1,18 @@
 package collection
 
-import "github.com/clearblade/cbtest/modules/check"
+import (
+	"github.com/clearblade/cbtest/modules/should/matcher"
+	"github.com/clearblade/cbtest/modules/should/to"
+)
 
-// Matcher is an alias to check.Matcher.
-type Matcher check.Matcher
+// Matcher is an alias to matcher.Matcher.
+type Matcher matcher.Matcher
 
 // HaveTotal checks whenever the actual value contains a count field with the
 // expected count.
 func HaveTotal(count int) Matcher {
 
-	return check.WithTransform(func(actual interface{}) int {
+	return to.WithTransform(func(actual interface{}) int {
 
 		data, ok := actual.(map[string]interface{})
 		if !ok {
@@ -23,6 +26,6 @@ func HaveTotal(count int) Matcher {
 
 		return int(count)
 
-	}, check.Equal(count))
+	}, to.Equal(count))
 
 }

@@ -1,4 +1,4 @@
-package check_test
+package should_test
 
 import (
 	"testing"
@@ -8,7 +8,8 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/clearblade/cbtest/mocks"
-	"github.com/clearblade/cbtest/modules/check"
+	"github.com/clearblade/cbtest/modules/should"
+	"github.com/clearblade/cbtest/modules/should/to"
 )
 
 func TestExpect(t *testing.T) {
@@ -19,7 +20,7 @@ func TestExpect(t *testing.T) {
 	mockT.On("Helper").Return()
 	mockT.On("Errorf", mock.Anything, mock.Anything).Return()
 
-	assert.True(t, check.ExpectE(mockT, s, check.ConsistOf("baz", "bar", "foo"))) // ordering doesn't matter
+	assert.True(t, should.ExpectE(mockT, s, to.ConsistOf("baz", "bar", "foo"))) // ordering doesn't matter
 }
 
 func TestExpect_WithGomega(t *testing.T) {
@@ -28,7 +29,7 @@ func TestExpect_WithGomega(t *testing.T) {
 	mockT.On("Helper").Return()
 	mockT.On("Errorf", mock.Anything, mock.Anything, mock.Anything).Return()
 
-	assert.True(t, check.ExpectE(mockT, 10, gomega.BeNumerically(">", 5)))
-	assert.True(t, check.ExpectE(mockT, 10, gomega.BeNumerically("==", 10)))
-	assert.False(t, check.ExpectE(mockT, 10, gomega.BeNumerically(">", 15)))
+	assert.True(t, should.ExpectE(mockT, 10, gomega.BeNumerically(">", 5)))
+	assert.True(t, should.ExpectE(mockT, 10, gomega.BeNumerically("==", 10)))
+	assert.False(t, should.ExpectE(mockT, 10, gomega.BeNumerically(">", 15)))
 }

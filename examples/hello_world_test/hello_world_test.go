@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/clearblade/cbtest/modules/auth"
-	"github.com/clearblade/cbtest/modules/check"
 	"github.com/clearblade/cbtest/modules/service"
+	"github.com/clearblade/cbtest/modules/should"
 	"github.com/clearblade/cbtest/modules/system"
 )
 
@@ -27,8 +27,8 @@ func TestHelloWorld(t *testing.T) {
 
 	// call the service
 	resp, err := devClient.CallService(s.SystemKey(), HelloWorldService, nil, false)
-	check.NoError(t, err)
+	should.NoError(t, err)
 
 	// assert response from service
-	check.Expect(t, resp, service.ResponseSuccess("Hello, world!"))
+	should.Expect(t, resp, service.ResponseSuccess("Hello, world!"))
 }

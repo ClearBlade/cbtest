@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/clearblade/cbtest/modules/auth"
-	"github.com/clearblade/cbtest/modules/check"
 	"github.com/clearblade/cbtest/modules/collection"
 	"github.com/clearblade/cbtest/modules/service"
+	"github.com/clearblade/cbtest/modules/should"
 	"github.com/clearblade/cbtest/modules/system"
 )
 
@@ -41,8 +41,8 @@ func TestCollection(t *testing.T) {
 	for _, tt := range table {
 		payload := map[string]interface{}{"lhs": tt.lhs, "rhs": tt.rhs}
 		resp, err := devClient.CallService(s.SystemKey(), AdderService, payload, false)
-		check.NoError(t, err)
-		check.Expect(t, resp, service.ResponseSuccess(tt.want))
+		should.NoError(t, err)
+		should.Expect(t, resp, service.ResponseSuccess(tt.want))
 	}
 
 	// fetch all collection data
@@ -50,8 +50,8 @@ func TestCollection(t *testing.T) {
 
 	// fetch data total for the collection
 	data, err := devClient.GetDataTotal(collID, nil)
-	check.NoError(t, err)
+	should.NoError(t, err)
 
 	// assert that the total respose contains expected value
-	check.Expect(t, data, collection.HaveTotal(len(table)))
+	should.Expect(t, data, collection.HaveTotal(len(table)))
 }

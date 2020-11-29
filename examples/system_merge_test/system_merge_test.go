@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/clearblade/cbtest/modules/auth"
-	"github.com/clearblade/cbtest/modules/check"
 	"github.com/clearblade/cbtest/modules/service"
+	"github.com/clearblade/cbtest/modules/should"
 	"github.com/clearblade/cbtest/modules/system"
 )
 
@@ -29,15 +29,15 @@ func TestSystemMerge(t *testing.T) {
 
 	// call the foo service
 	foo, err := devClient.CallService(s.SystemKey(), FooService, nil, false)
-	check.NoError(t, err)
+	should.NoError(t, err)
 
 	// assert response from service
-	check.Expect(t, foo, service.ResponseSuccess("foo"))
+	should.Expect(t, foo, service.ResponseSuccess("foo"))
 
 	// call the bar service
 	bar, err := devClient.CallService(s.SystemKey(), BarService, nil, false)
-	check.NoError(t, err)
+	should.NoError(t, err)
 
 	// assert response from service
-	check.Expect(t, bar, service.ResponseSuccess("bar"))
+	should.Expect(t, bar, service.ResponseSuccess("bar"))
 }

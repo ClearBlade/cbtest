@@ -8,8 +8,8 @@ import (
 
 	"github.com/clearblade/cbtest/contrib/npm"
 	"github.com/clearblade/cbtest/modules/auth"
-	"github.com/clearblade/cbtest/modules/check"
 	"github.com/clearblade/cbtest/modules/service"
+	"github.com/clearblade/cbtest/modules/should"
 	"github.com/clearblade/cbtest/modules/system"
 )
 
@@ -34,8 +34,8 @@ func TestNPMBasedSystem(t *testing.T) {
 	// call the service
 	data := map[string]interface{}{"name": "npm!"}
 	resp, err := devClient.CallService(s.SystemKey(), SayHelloService, data, false)
-	check.NoError(t, err)
+	should.NoError(t, err)
 
 	// assert response from service
-	check.Expect(t, resp, service.ResponseSuccess("Hello, npm!"))
+	should.Expect(t, resp, service.ResponseSuccess("Hello, npm!"))
 }

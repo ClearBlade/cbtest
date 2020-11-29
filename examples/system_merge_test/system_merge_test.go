@@ -34,7 +34,7 @@ func TestSystemMerge(t *testing.T) {
 	// assert response from service
 	check.Expect(t, foo, service.ResponseSuccess("foo"))
 
-	// call the bar serice
+	// call the bar service
 	bar, err := devClient.CallService(s.SystemKey(), BarService, nil, false)
 	check.NoError(t, err)
 

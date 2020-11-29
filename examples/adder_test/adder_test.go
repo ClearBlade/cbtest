@@ -28,7 +28,7 @@ func TestAdder(t *testing.T) {
 	// payload that we will send to the adder service
 	payload := map[string]interface{}{"lhs": 3, "rhs": 4}
 
-	// call the serice
+	// call the service
 	resp, err := devClient.CallService(s.SystemKey(), AdderService, payload, false)
 	check.NoError(t, err)
 

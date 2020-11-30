@@ -1,5 +1,5 @@
-// Package collection_test showcases a test that checks a collection.
-package collection_test
+// Package collection showcases a test that checks a collection.
+package collection
 
 import (
 	"testing"

@@ -1,7 +1,8 @@
-// Package npm_test showcases a test that executes npm before importing the system.
+// Package npm showcases a test that executes npm before importing the system.
 // Useful for systems that are written in TypeScript and need to be transpiled
-// beforehand.
-package npm_test
+// beforehand. Note that the build process will make the test slower, so you
+// might want to move the build step out of the test at some point.
+package npm
 
 import (
 	"testing"

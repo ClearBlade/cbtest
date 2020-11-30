@@ -1,5 +1,5 @@
-// Package adder_test showcases a test that passes parameters to a code service.
-package adder_test
+// Package hello_world showcases a test expects a response from a service.
+package hello_world
 
 import (
 	"testing"
@@ -11,10 +11,10 @@ import (
 )
 
 const (
-	AdderService = "adder"
+	HelloWorldService = "helloWorld"
 )
 
-func TestAdder(t *testing.T) {
+func TestHelloWorld(t *testing.T) {
 
 	// import into new system
 	s := system.UseOrImport(t, "./extra")
@@ -25,13 +25,10 @@ func TestAdder(t *testing.T) {
 	// obtain developer client from the ephemeral system
 	devClient := auth.LoginAsDev(t, s)
 
-	// payload that we will send to the adder service
-	payload := map[string]interface{}{"lhs": 3, "rhs": 4}
-
 	// call the service
-	resp, err := devClient.CallService(s.SystemKey(), AdderService, payload, false)
+	resp, err := devClient.CallService(s.SystemKey(), HelloWorldService, nil, false)
 	should.NoError(t, err)
 
 	// assert response from service
-	should.Expect(t, resp, service.ResponseSuccess(7.0))
+	should.Expect(t, resp, service.ResponseSuccess("Hello, world!"))
 }

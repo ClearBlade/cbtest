@@ -36,13 +36,13 @@ func TestShould(t *testing.T) {
 	between0to100 := to.All(to.BeNumerically(">=", 0), to.BeNumerically("<=", 100))
 
 	// assert the response expectations
-	should.Expect(t, resp["success"], to.BeTrue())
-	should.Expect(t, resp["results"], to.HaveKeyAndValue("foo", "foo"))
-	should.Expect(t, resp["results"], to.HaveKeyAndValue("bar", "bar"))
-	should.Expect(t, resp["results"], to.HaveKeyAndValue("baz", "baz"))
-	should.Expect(t, resp["results"], to.HaveKeyAndValue("one", 1.0))
-	should.Expect(t, resp["results"], to.HaveKeyAndValue("two", to.BeNumerically("==", 2)))
-	should.Expect(t, resp["results"], to.HaveKeyAndValue("three", to.BeNumerically("~", 3, 0.1)))
-	should.Expect(t, resp["results"], to.HaveKeyAndValue("random", between0to100))
-	should.Expect(t, resp["results"], to.HaveKeyAndValue("message", to.ContainSubstring("lazy dog")))
+	should.ExpectE(t, resp["success"], to.BeTrue())
+	should.ExpectE(t, resp["results"], to.HaveKeyAndValue("foo", "foo"))
+	should.ExpectE(t, resp["results"], to.HaveKeyAndValue("bar", "bar"))
+	should.ExpectE(t, resp["results"], to.HaveKeyAndValue("baz", "baz"))
+	should.ExpectE(t, resp["results"], to.HaveKeyAndValue("one", 1.0))
+	should.ExpectE(t, resp["results"], to.HaveKeyAndValue("two", to.BeNumerically("==", 2)))
+	should.ExpectE(t, resp["results"], to.HaveKeyAndValue("three", to.BeNumerically("~", 3, 0.1)))
+	should.ExpectE(t, resp["results"], to.HaveKeyAndValue("random", between0to100))
+	should.ExpectE(t, resp["results"], to.HaveKeyAndValue("message", to.ContainSubstring("lazy dog")))
 }

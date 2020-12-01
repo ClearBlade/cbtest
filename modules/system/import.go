@@ -1,34 +1,12 @@
 package system
 
 import (
-	"fmt"
-	"os"
-	"path/filepath"
-	"time"
-
 	"github.com/stretchr/testify/require"
 
-	"github.com/clearblade/cblib"
 	"github.com/clearblade/cbtest"
 	"github.com/clearblade/cbtest/config"
-	"github.com/clearblade/cbtest/internal/fsutil"
-	"github.com/clearblade/cbtest/internal/merge"
-	"github.com/clearblade/cbtest/modules/auth"
 	"github.com/clearblade/cbtest/provider"
 )
-
-// checkSystem returns error if the given path does not contain a system.
-func checkSystem(path string) error {
-
-	systemJSONPath := filepath.Join(path, "system.json")
-
-	_, err := os.Stat(systemJSONPath)
-	if err != nil {
-		return fmt.Errorf("not a system: %s", err)
-	}
-
-	return nil
-}
 
 // Import imports the system given by merging the base system given by
 // `systemPath` and the extra files given by each of the `extraPaths`.
@@ -73,18 +51,29 @@ func ImportWithConfig(t cbtest.T, provider provider.Config, systemPath string, e
 func ImportWithConfigE(t cbtest.T, provider provider.Config, systemPath string, extraPaths ...string) (*EphemeralSystem, error) {
 	t.Helper()
 
-	var err error
+	return runImportWorkflow(t, provider, &defaultImportSteps{
+		path:  systemPath,
+		extra: extraPaths,
+	})
+}
 
-	err = checkSystem(systemPath)
+// runImportWorkflow is an unexported function that runs the import workflow.
+func runImportWorkflow(t cbtest.T, provider provider.Config, steps importSteps) (*EphemeralSystem, error) {
+	t.Helper()
+
+	var err error
+	config := provider.Config(t)
+	systemPath := steps.Path()
+	extraPaths := steps.Extra()
+
+	// make sure the system is actually a system
+	err = steps.CheckSystem(systemPath)
 	if err != nil {
 		return nil, err
 	}
 
-	config := provider.Config(t)
-
 	// our imported system root will be at a temporary directory
-	tempdir, cleanupLocal := fsutil.MakeTempDir()
-	system := newImportedSystem(config, tempdir)
+	tempdir, tempcleanup := steps.MakeTempDir()
 
 	// the system paths that are gonna be merged into the temporary directory
 	mergePaths := make([]string, 0, 1+len(extraPaths))
@@ -92,25 +81,32 @@ func ImportWithConfigE(t cbtest.T, provider provider.Config, systemPath string, 
 	mergePaths = append(mergePaths, extraPaths...)
 
 	t.Log("Merging system folders...")
-	err = merge.Folders(tempdir, mergePaths...)
+	err = steps.MergeFolders(tempdir, mergePaths...)
 	if err != nil {
-		cleanupLocal()
+		steps.Cleanup(tempdir)
+		tempcleanup()
 		return nil, err
 	}
 
 	t.Log("Registering developer...")
-	err = auth.RegisterDevE(t, system, config.Developer.Email, config.Developer.Password)
+	err = steps.RegisterDeveloper(t, config)
 	if err != nil {
-		cleanupLocal()
+		steps.Cleanup(tempdir)
+		tempcleanup()
 		return nil, err
 	}
 
 	t.Log("Importing system into platform...")
-	_, err = cbImportSystem(t, system)
+	systemKey, systemSecret, err := steps.DoImport(t, config, tempdir)
 	if err != nil {
-		cleanupLocal()
+		steps.Cleanup(tempdir)
+		tempcleanup()
 		return nil, err
 	}
+
+	system := newImportedSystem(config, tempdir)
+	system.config.SystemKey = systemKey
+	system.config.SystemSecret = systemSecret
 
 	t.Log("Import successful")
 	t.Logf("Platform URL: %s", system.PlatformURL())
@@ -118,45 +114,4 @@ func ImportWithConfigE(t cbtest.T, provider provider.Config, systemPath string, 
 	t.Logf("System key: %s", system.SystemKey())
 	t.Logf("System URL: %s", system.RemoteURL())
 	return system, nil
-}
-
-// cbImportSystem imports the given system into a remote platform instance. Note
-// that this function will modify the passed system and set its system key and
-// secret.
-// Returns stdout/stderr and error on failure.
-func cbImportSystem(t cbtest.T, system *EphemeralSystem) (string, error) {
-	t.Helper()
-
-	importConfig := cbImportConfig(t, system)
-
-	devClient, err := auth.LoginAsDevE(t, system)
-	if err != nil {
-		return "", err
-	}
-
-	result, err := cblib.ImportSystemUsingConfig(importConfig, system.LocalPath(), devClient)
-	if err != nil {
-		return "", err
-	}
-
-	system.config.SystemKey = result.SystemKey
-	system.config.SystemSecret = result.SystemSecret
-	return "", nil
-}
-
-// cbImportConfig returns a cblib.ImportConfig instance for importing the system.
-func cbImportConfig(t cbtest.T, system *EphemeralSystem) cblib.ImportConfig {
-	t.Helper()
-
-	name := fmt.Sprintf("cbtest-%s", t.Name())
-	nowstr := time.Now().UTC().Format(time.UnixDate)
-
-	return cblib.ImportConfig{
-		SystemName:             name,
-		SystemDescription:      fmt.Sprintf("Created on %s", nowstr),
-		ImportUsers:            system.config.Import.ImportUsers,
-		ImportRows:             system.config.Import.ImportRows,
-		DefaultUserPassword:    system.config.User.Password,
-		DefaultDeviceActiveKey: system.config.Device.ActiveKey,
-	}
 }

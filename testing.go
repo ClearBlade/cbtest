@@ -1,5 +1,7 @@
 package cbtest
 
+//go:generate mockery --name T --output mocks
+
 // T is an interface wrapper around *testing.T
 type T interface {
 	Error(args ...interface{})

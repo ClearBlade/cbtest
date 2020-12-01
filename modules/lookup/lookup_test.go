@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/clearblade/cbtest/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/clearblade/cbtest/mocks"
 )
 
 var testingT = &mocks.T{}

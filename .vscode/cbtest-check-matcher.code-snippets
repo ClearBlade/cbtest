@@ -28,7 +28,7 @@
 			"    return true, nil",
 			"}",
 			"",
-			"// NegatedFailureMessage returns the failure message.",
+			"// FailureMessage returns the failure message.",
 			"func ($3 *$1) FailureMessage(actual interface{}) string {",
 			"    return \"Failure message goes here\"",
 			"}",

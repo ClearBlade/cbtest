@@ -27,9 +27,6 @@ func makeMockT() *mocks.T {
 func TestRunImportWorkflow_ValidStepsSucceeds(t *testing.T) {
 
 	config := config.GetDefaultConfig()
-	config.Developer.Email = "foobar@email.com"
-	config.Developer.Password = "foobar"
-
 	mockT := makeMockT()
 	mockSteps := &mockImportSteps{}
 	mockSteps.On("Path").Return("some-path")
@@ -53,9 +50,6 @@ func TestRunImportWorkflow_ValidStepsSucceeds(t *testing.T) {
 func TestRunImportWorkflow_BadCheckSystemFails(t *testing.T) {
 
 	config := config.GetDefaultConfig()
-	config.Developer.Email = "foobar@email.com"
-	config.Developer.Password = "foobar"
-
 	mockT := makeMockT()
 	mockSteps := &mockImportSteps{}
 	mockSteps.On("Path").Return("some-path")
@@ -72,9 +66,6 @@ func TestRunImportWorkflow_BadCheckSystemFails(t *testing.T) {
 func TestRunImportWorkflow_BadMergeFoldersFails(t *testing.T) {
 
 	config := config.GetDefaultConfig()
-	config.Developer.Email = "foobar@email.com"
-	config.Developer.Password = "foobar"
-
 	mockT := makeMockT()
 	mockSteps := &mockImportSteps{}
 	mockSteps.On("Path").Return("some-path")
@@ -94,9 +85,6 @@ func TestRunImportWorkflow_BadMergeFoldersFails(t *testing.T) {
 func TestRunImportWorkflow_BadRegisterDeveloperFails(t *testing.T) {
 
 	config := config.GetDefaultConfig()
-	config.Developer.Email = "foobar@email.com"
-	config.Developer.Password = "foobar"
-
 	mockT := makeMockT()
 	mockSteps := &mockImportSteps{}
 	mockSteps.On("Path").Return("some-path")
@@ -117,9 +105,6 @@ func TestRunImportWorkflow_BadRegisterDeveloperFails(t *testing.T) {
 func TestRunImportWorkflow_BadDoImportFails(t *testing.T) {
 
 	config := config.GetDefaultConfig()
-	config.Developer.Email = "foobar@email.com"
-	config.Developer.Password = "foobar"
-
 	mockT := makeMockT()
 	mockSteps := &mockImportSteps{}
 	mockSteps.On("Path").Return("some-path")

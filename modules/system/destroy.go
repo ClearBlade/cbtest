@@ -26,13 +26,18 @@ func Destroy(t cbtest.T, system *EphemeralSystem) {
 // Returns error on failure.
 func DestroyE(t cbtest.T, system *EphemeralSystem) error {
 	t.Helper()
+	return doDestroy(t, system, destroyFolderAndInstance)
+}
+
+func doDestroy(t cbtest.T, system *EphemeralSystem, destroyer func(cbtest.T, *EphemeralSystem) error) error {
+	t.Helper()
 
 	if system.IsExternal() {
 		t.Log("External system not destroyed")
 		return nil
 	}
 
-	err := doDestroy(t, system)
+	err := destroyer(t, system)
 	if err != nil {
 		t.Logf("Error destroying system: %s", err)
 		return err
@@ -42,7 +47,7 @@ func DestroyE(t cbtest.T, system *EphemeralSystem) error {
 	return nil
 }
 
-func doDestroy(t cbtest.T, system *EphemeralSystem) error {
+func destroyFolderAndInstance(t cbtest.T, system *EphemeralSystem) error {
 
 	g := errgroup.Group{}
 

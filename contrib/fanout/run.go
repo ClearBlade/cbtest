@@ -1,61 +1,52 @@
 package fanout
 
 import (
+	"context"
 	"fmt"
 	"sync"
-	"time"
 
 	"github.com/clearblade/cbtest"
 	"github.com/stretchr/testify/require"
 )
 
-// RunHandler is a function that represents a worker.
-type RunHandler func(t cbtest.T, idx int)
+// RunHandler is a function that represents a worker with a context.
+type RunHandler func(t cbtest.T, ctx Context)
 
-// Group holds a reference to a fanout.Each call.
-type Group struct {
-	parentT     cbtest.T
-	name        string
-	numParallel int
-	fn          RunHandler
-	wg          *sync.WaitGroup
-}
-
-// Cancel tries to cancel the goroutine.
-func (g *Group) Cancel() {
-}
-
-// Wait waits for every goroutine to finish.
-func (g *Group) Wait(timeout ...time.Duration) {
-	g.wg.Wait()
-}
-
-// Run runs each of the items in the given sequence in parallel. Note that the
-// sequence must be a slice.
+// Run creates a new group with the given amount of members and starts executing
+// them. The function will return once all members are up and running.
 // Panics on failure.
-func Run(t cbtest.T, name string, numParallel int, fn RunHandler) *Group {
-	job, err := RunE(t, name, numParallel, fn)
+func Run(t cbtest.T, name string, numMembers int, fn RunHandler) *Group {
+	job, err := RunE(t, name, numMembers, fn)
 	require.NoError(t, err)
 	return job
 }
 
-// RunE runs each of the items in the given sequence in parallel. Note that the
-// sequence must be a slice.
+// RunE creates a new group with the given amount of members and starts executing
+// them. The function will return once all members are up and running.
 // Returns error on failure.
-func RunE(t cbtest.T, name string, numParallel int, fn RunHandler) (*Group, error) {
+func RunE(t cbtest.T, name string, numMembers int, fn RunHandler) (*Group, error) {
+
+	testingTs := make([]cbtest.T, 0, numMembers)
+	contexts := make([]Context, 0, numMembers)
 
 	wg := sync.WaitGroup{}
+	wg.Add(numMembers)
 
-	for idx := 0; idx < numParallel; idx++ {
-		wg.Add(1)
-		eachT := newFanoutT(t, name, fmt.Sprintf("%d", idx))
-		go eachRunner(eachT, &wg, fn, idx)
+	for idx := 0; idx < numMembers; idx++ {
+
+		workerT := newFanoutT(t, name, fmt.Sprintf("%d", idx))
+		workerContext := newContext(context.TODO(), idx)
+
+		testingTs = append(testingTs, workerT)
+		contexts = append(contexts, workerContext)
+
+		go workerRunner(&wg, fn, workerT, workerContext)
 	}
 
-	return &Group{t, name, numParallel, fn, &wg}, nil
+	return &Group{t, name, testingTs, contexts, fn, &wg, false}, nil
 }
 
-func eachRunner(t cbtest.T, wg *sync.WaitGroup, fn RunHandler, idx int) {
+func workerRunner(wg *sync.WaitGroup, fn RunHandler, t cbtest.T, ctx Context) {
 
 	// finished := false
 
@@ -65,6 +56,6 @@ func eachRunner(t cbtest.T, wg *sync.WaitGroup, fn RunHandler, idx int) {
 		// recover here and notify so we can panic on wait
 	}()
 
-	fn(t, idx)
+	fn(t, ctx)
 	// finished = true
 }

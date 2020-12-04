@@ -30,7 +30,13 @@ func WaitE(t cbtest.T, group *Group, timeout ...time.Duration) error {
 		waitTimeout = timeout[0]
 	}
 
-	return waitForGroup(t, group.name, group.wg, waitTimeout)
+	err := waitForGroup(t, group.name, group.wg, waitTimeout)
+	if err != nil {
+		return err
+	}
+
+	group.finished = true
+	return nil
 }
 
 // waitForGroup waits for the given named group to finish. Returns error if the

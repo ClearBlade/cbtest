@@ -2,68 +2,69 @@ package fanout
 
 import (
 	"fmt"
-	"reflect"
-	"testing"
+	"sync"
+	"time"
+
+	"github.com/clearblade/cbtest"
+	"github.com/stretchr/testify/require"
 )
 
-// runHandler is an alias for raw interface{}. Used as an alias since it looks
-// better and more clear in the documentation.
-type runHandler interface{}
+// RunHandler is a function that represents a worker.
+type RunHandler func(t cbtest.T, idx int)
 
-func Run(t tWithRunParallel, name string, numParallel int, fn runHandler) bool {
-
-	fnval, err := requireRunHandler(fn)
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-		return false
-	}
-
-	t.Run("Worker", func(t *testing.T) {
-		for idx := 0; idx < numParallel; idx++ {
-
-			currentIdx := idx
-			name := fmt.Sprintf("%d", currentIdx)
-
-			t.Run(name, func(t *testing.T) {
-				t.Parallel()
-				fnval.Call([]reflect.Value{reflect.ValueOf(t), reflect.ValueOf(currentIdx)})
-			})
-
-		}
-	})
-	return false
+// Group holds a reference to a fanout.Each call.
+type Group struct {
+	parentT     cbtest.T
+	name        string
+	numParallel int
+	fn          RunHandler
+	wg          *sync.WaitGroup
 }
 
-func requireRunHandler(fn runHandler) (reflect.Value, error) {
-
-	var err error
-	reterr := fmt.Errorf("runHandler must be a function that takes a testing type and index; and returns any type")
-
-	value := reflect.ValueOf(fn)
-
-	if value.Kind() != reflect.Func {
-		return reflect.ValueOf(nil), reterr
-	}
-
-	fntype := value.Type()
-
-	if fntype.NumIn() != 2 {
-		return reflect.ValueOf(nil), reterr
-	}
-
-	if fntype.NumOut() != 0 && fntype.NumOut() != 1 {
-		return reflect.ValueOf(nil), reterr
-	}
-
-	err = requireTestingType(fntype.In(0))
-	if err != nil {
-		return reflect.ValueOf(nil), reterr
-	}
-
-	return value, nil
+// Cancel tries to cancel the goroutine.
+func (g *Group) Cancel() {
 }
 
-func requireTestingType(t reflect.Type) error {
-	return nil
+// Wait waits for every goroutine to finish.
+func (g *Group) Wait(timeout ...time.Duration) {
+	g.wg.Wait()
+}
+
+// Run runs each of the items in the given sequence in parallel. Note that the
+// sequence must be a slice.
+// Panics on failure.
+func Run(t cbtest.T, name string, numParallel int, fn RunHandler) *Group {
+	job, err := RunE(t, name, numParallel, fn)
+	require.NoError(t, err)
+	return job
+}
+
+// RunE runs each of the items in the given sequence in parallel. Note that the
+// sequence must be a slice.
+// Returns error on failure.
+func RunE(t cbtest.T, name string, numParallel int, fn RunHandler) (*Group, error) {
+
+	wg := sync.WaitGroup{}
+
+	for idx := 0; idx < numParallel; idx++ {
+		wg.Add(1)
+		eachT := newFanoutT(t, name, fmt.Sprintf("%d", idx))
+		go eachRunner(eachT, &wg, fn, idx)
+	}
+
+	return &Group{t, name, numParallel, fn, &wg}, nil
+}
+
+func eachRunner(t cbtest.T, wg *sync.WaitGroup, fn RunHandler, idx int) {
+
+	// finished := false
+
+	defer wg.Done()
+
+	defer func() {
+		// recover here and notify so we can panic on wait
+	}()
+
+	fn(t, idx)
+	// finished = true
 }

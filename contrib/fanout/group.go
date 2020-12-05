@@ -24,7 +24,7 @@ type Group struct {
 	contexts []Context
 
 	// fn is the handler function that executes for each of the goroutines.
-	fn RunHandler
+	fn WorkerFunc
 
 	// wg is the wait group reference that we use for waiting on each goroutine.
 	wg *sync.WaitGroup

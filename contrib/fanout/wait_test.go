@@ -56,5 +56,5 @@ func TestWaitGroup_Timeout(t *testing.T) {
 	}()
 
 	err := waitForGroup(mockT, "Group name", &wg, time.Millisecond)
-	assert.EqualError(t, err, "Timed out waiting for group \"Group name\"")
+	assert.EqualError(t, err, "Timed out waiting for group \"Group name\" (1ms)")
 }

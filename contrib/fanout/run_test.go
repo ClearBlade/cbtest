@@ -15,6 +15,7 @@ func TestRun_LogAndLogfProxySucceeds(t *testing.T) {
 
 	mockT := &mocks.T{}
 	mockT.On("Helper").Return()
+	mockT.On("Logf", "Running group \"%s\"...", "Create words")
 	mockT.On("Log", "fanout/Create_words/0:", "Created word:", "word-0")
 	mockT.On("Log", "fanout/Create_words/1:", "Created word:", "word-1")
 	mockT.On("Log", "fanout/Create_words/2:", "Created word:", "word-2")

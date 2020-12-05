@@ -81,5 +81,6 @@ func (ctx *contextImpl) Unstash(key interface{}) interface{} {
 		return value
 	}
 
+	// did not find in stash, try in underlying context
 	return ctx.Context.Value(key)
 }

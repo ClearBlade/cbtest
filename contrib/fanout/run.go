@@ -9,13 +9,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// RunHandler is a function that represents a worker with a context.
-type RunHandler func(t cbtest.T, ctx Context)
-
 // Run creates a new group with the given amount of members and starts executing
 // them. The function will return once all members are up and running.
 // Panics on failure.
-func Run(t cbtest.T, name string, numMembers int, fn RunHandler) *Group {
+func Run(t cbtest.T, name string, numMembers int, fn WorkerFunc) *Group {
+	t.Helper()
 	job, err := RunE(t, name, numMembers, fn)
 	require.NoError(t, err)
 	return job
@@ -24,7 +22,9 @@ func Run(t cbtest.T, name string, numMembers int, fn RunHandler) *Group {
 // RunE creates a new group with the given amount of members and starts executing
 // them. The function will return once all members are up and running.
 // Returns error on failure.
-func RunE(t cbtest.T, name string, numMembers int, fn RunHandler) (*Group, error) {
+func RunE(t cbtest.T, name string, numMembers int, fn WorkerFunc) (*Group, error) {
+	t.Helper()
+	t.Logf("Running group \"%s\"...", name)
 
 	testingTs := make([]cbtest.T, 0, numMembers)
 	contexts := make([]Context, 0, numMembers)
@@ -44,18 +44,4 @@ func RunE(t cbtest.T, name string, numMembers int, fn RunHandler) (*Group, error
 	}
 
 	return &Group{t, name, testingTs, contexts, fn, &wg, false}, nil
-}
-
-func workerRunner(wg *sync.WaitGroup, fn RunHandler, t cbtest.T, ctx Context) {
-
-	// finished := false
-
-	defer wg.Done()
-
-	defer func() {
-		// recover here and notify so we can panic on wait
-	}()
-
-	fn(t, ctx)
-	// finished = true
 }

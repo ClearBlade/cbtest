@@ -14,7 +14,9 @@ func TestContinue(t *testing.T) {
 
 	mockT := &mocks.T{}
 	mockT.On("Helper").Return()
+	mockT.On("Logf", "Running group \"%s\"...", "Create numbers")
 	mockT.On("Logf", "Waiting for group \"%s\"...", "Create numbers")
+	mockT.On("Logf", "Continuing group \"%s\" from \"%s\"...", "Show numbers", "Create numbers")
 	mockT.On("Logf", "%s Number is: %d", "fanout/Show_numbers/0:", 0)
 	mockT.On("Logf", "%s Number is: %d", "fanout/Show_numbers/1:", 10)
 	mockT.On("Logf", "%s Number is: %d", "fanout/Show_numbers/2:", 20)

@@ -11,7 +11,8 @@ import (
 // Continue reuses a previously created group to continue execution in a new
 // function as a new *Group.
 // Panics on error.
-func Continue(t cbtest.T, name string, group *Group, fn RunHandler) *Group {
+func Continue(t cbtest.T, name string, group *Group, fn WorkerFunc) *Group {
+	t.Helper()
 	g, err := ContinueE(t, name, group, fn)
 	require.NoError(t, err)
 	return g
@@ -20,10 +21,12 @@ func Continue(t cbtest.T, name string, group *Group, fn RunHandler) *Group {
 // ContinueE reuses a previously created group to continue execution in a new
 // function as a new *Group.
 // Returns error on failure.
-func ContinueE(t cbtest.T, name string, group *Group, fn RunHandler) (*Group, error) {
+func ContinueE(t cbtest.T, name string, group *Group, fn WorkerFunc) (*Group, error) {
+	t.Helper()
+	t.Logf("Continuing group \"%s\" from \"%s\"...", name, group.name)
 
 	if !group.finished {
-		return nil, fmt.Errorf("Group \"%s\" is finished. Make sure you use fanout.Wait[E] before you call fanout.Continue[E]", group.name)
+		return nil, makeGroupNotFinishedError(group.name)
 	}
 
 	numMembers := len(group.contexts)
@@ -46,4 +49,8 @@ func ContinueE(t cbtest.T, name string, group *Group, fn RunHandler) (*Group, er
 	}
 
 	return &Group{t, name, testingTs, contexts, fn, &wg, false}, nil
+}
+
+func makeGroupNotFinishedError(groupName string) error {
+	return fmt.Errorf("Group \"%s\" is not finished. Make sure you use fanout.Wait[E] before you call fanout.Continue[E]", groupName)
 }

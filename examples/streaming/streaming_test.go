@@ -12,6 +12,8 @@ import (
 	"time"
 
 	cb "github.com/clearblade/Go-SDK"
+	"github.com/clearblade/cbtest"
+	"github.com/clearblade/cbtest/contrib/fanout"
 	"github.com/clearblade/cbtest/modules/auth"
 	"github.com/clearblade/cbtest/modules/collection"
 	"github.com/clearblade/cbtest/modules/mqtt"
@@ -63,11 +65,75 @@ func TestStreaming(t *testing.T) {
 	err = devClient.DeleteData(collID, cb.NewQuery())
 	should.NoError(t, err)
 
-	// connect each device and publish
-	totalPublishes := devicesConnectAndPublish(t, s)
+	// stage-0
+
+	devicesCreateAndConnect := fanout.Run(t, "Devices create and connect", *flagDevices, stageCreateAndConnect(s))
+
+	fanout.Wait(t, devicesCreateAndConnect, time.Minute)
+
+	// stage-1
+
+	totalPublishes := int32(0)
+
+	devicesPublish := fanout.Continue(t, "Devices publish", devicesCreateAndConnect, stagePublish(s, &totalPublishes))
+
+	fanout.Wait(t, devicesPublish, time.Minute)
 
 	// check results
-	checkResults(t, s, totalPublishes)
+
+	checkResults(t, s, int(totalPublishes))
+}
+
+// Stages
+
+func stageCreateAndConnect(s *system.EphemeralSystem) fanout.WorkerFunc {
+	return func(t cbtest.T, ctx fanout.Context) {
+
+		idx := ctx.Identifier()
+		name := fmt.Sprintf("Device-%d", idx)
+
+		t.Log("Registering device")
+		auth.RegisterDevice(t, s, name, "active-key")
+
+		t.Log("Logging in")
+		deviceClient := auth.LoginDevice(t, s, name, "active-key")
+
+		t.Log("Initializing MQTT")
+		mqtt.InitializeMQTT(t, s, deviceClient)
+
+		// stash values that we can use later
+		ctx.Stash("deviceClient", deviceClient)
+	}
+}
+
+func stagePublish(s *system.EphemeralSystem, totalPublishes *int32) fanout.WorkerFunc {
+	return func(t cbtest.T, ctx fanout.Context) {
+
+		// unstash client from previous stage
+		deviceClient, ok := ctx.Unstash("deviceClient").(*cb.DeviceClient)
+		should.Expect(t, ok, to.BeTrue())
+
+		t.Log("Publishing...")
+		start := time.Now()
+		for time.Since(start) < *flagDuration {
+
+			// generate message to send
+			message := GenerateMessage()
+			data, err := json.Marshal(message)
+			should.NoError(t, err)
+
+			// send message
+			err = deviceClient.Publish(MessagesTopic, data, 1)
+			should.NoError(t, err)
+
+			// increment global counter using atomic operation
+			atomic.AddInt32(totalPublishes, 1)
+
+			// sleep until we can publish again
+			time.Sleep(*flagPeriod)
+		}
+		t.Log("Publishing done")
+	}
 }
 
 // Test helpers
@@ -77,62 +143,6 @@ func logFlags(t *testing.T) {
 	t.Logf("Service instances running: %d", *flagInstances)
 	t.Logf("Total devices publishing: %d", *flagDevices)
 	t.Logf("Period between publishes: %s", *flagPeriod)
-}
-
-func devicesConnectAndPublish(t *testing.T, s *system.EphemeralSystem) int {
-
-	var totalPublishes int32
-
-	// NOTE: will block until all workers are done.
-	// see: https://blog.golang.org/subtests#TOC_7.
-	t.Run("Devices connect and publish", func(t *testing.T) {
-		for idx := 0; idx < *flagDevices; idx++ {
-			name := fmt.Sprintf("Device-%d", idx)
-			t.Run(name, func(t *testing.T) {
-				t.Parallel()
-				workerPublishes := deviceWorker(t, s, name)
-				atomic.AddInt32(&totalPublishes, int32(workerPublishes))
-			})
-		}
-	})
-
-	return int(totalPublishes)
-}
-
-func deviceWorker(t *testing.T, s *system.EphemeralSystem, name string) int {
-
-	messagesPublished := 0
-
-	// register device
-	auth.RegisterDevice(t, s, name, "active-key")
-
-	// login as the device we just created
-	deviceClient := auth.LoginDevice(t, s, name, "active-key")
-	t.Log("Logged in")
-
-	// initialize mqtt
-	mqtt.InitializeMQTT(t, s, deviceClient)
-
-	// publish
-	start := time.Now()
-	for time.Since(start) < *flagDuration {
-
-		// generate message to send
-		message := GenerateMessage()
-		data, err := json.Marshal(message)
-		should.NoError(t, err)
-
-		// send message
-		err = deviceClient.Publish(MessagesTopic, data, 1)
-		should.NoError(t, err)
-		messagesPublished++
-
-		// sleep until we can publish again
-		time.Sleep(*flagPeriod)
-	}
-
-	t.Log("Done publishing")
-	return messagesPublished
 }
 
 func checkResults(t *testing.T, s *system.EphemeralSystem, messagesPublished int) {

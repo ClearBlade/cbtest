@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestConsolidateSucceeds(t *testing.T) {
+func TestUnwrapSucceeds(t *testing.T) {
 
 	ctx := newContext(context.Background(), 0)
 
@@ -15,11 +15,11 @@ func TestConsolidateSucceeds(t *testing.T) {
 	ctx.Stash("two", 2)
 	ctx.Stash("three", 3)
 
-	consolidated := ctx.Consolidate()
+	rawctx := ctx.Unwrap()
 
-	assert.Equal(t, 1, consolidated.Value("one"))
-	assert.Equal(t, 2, consolidated.Value("two"))
-	assert.Equal(t, 3, consolidated.Value("three"))
+	assert.Equal(t, 1, rawctx.Value("one"))
+	assert.Equal(t, 2, rawctx.Value("two"))
+	assert.Equal(t, 3, rawctx.Value("three"))
 }
 
 func TestStashSucceeds(t *testing.T) {

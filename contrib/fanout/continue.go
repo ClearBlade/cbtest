@@ -40,7 +40,7 @@ func ContinueE(t cbtest.T, name string, group *Group, fn WorkerFunc) (*Group, er
 
 		oldContext := group.contexts[idx]
 		workerT := newFanoutT(t, name, fmt.Sprintf("%d", idx))
-		workerContext := newContext(oldContext.Consolidate(), idx)
+		workerContext := newContext(oldContext.Unwrap(), idx)
 
 		testingTs = append(testingTs, workerT)
 		contexts = append(contexts, workerContext)

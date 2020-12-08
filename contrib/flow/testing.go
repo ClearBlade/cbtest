@@ -86,6 +86,11 @@ func (t *T) FailNow() {
 	runtime.Goexit()
 }
 
+// Failed returns whenever the flow has failed.
+func (t *T) Failed() bool {
+	return t.failed
+}
+
 // Helper marks the calling function as a helper function, meaning its name
 // will be skipped when printing messages.
 func (t *T) Helper() {

@@ -6,7 +6,7 @@ func WithName(name string, worker Worker) Worker {
 
 	return func(t *T, ctx Context) {
 
-		if t.failed {
+		if t.Failed() {
 			return
 		}
 

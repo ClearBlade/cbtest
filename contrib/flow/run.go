@@ -52,5 +52,5 @@ func RunWithOutputE(t cbtest.T, worker Worker, output io.Writer) bool {
 	go workerRunner(&wg, workerFn, workerT, workerCtx)
 	wg.Wait()
 
-	return !workerT.failed
+	return !workerT.Failed()
 }

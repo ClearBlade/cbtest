@@ -24,6 +24,11 @@ func (_m *T) Errorf(format string, args ...interface{}) {
 	_m.Called(_ca...)
 }
 
+// Fail provides a mock function with given fields:
+func (_m *T) Fail() {
+	_m.Called()
+}
+
 // FailNow provides a mock function with given fields:
 func (_m *T) FailNow() {
 	_m.Called()

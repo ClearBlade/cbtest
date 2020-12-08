@@ -18,12 +18,11 @@ func Parallel(workers ...Worker) Worker {
 
 		for idx, fn := range workers {
 
-			wg.Add(1)
-
 			workerFn := fn
 			workerT := newChildFlowT(t, fmt.Sprintf("parallel-%d", idx))
 			workerCtx := newContext(ctx.Unwrap(), idx)
 
+			wg.Add(1)
 			go workerRunner(&wg, workerFn, workerT, workerCtx)
 		}
 

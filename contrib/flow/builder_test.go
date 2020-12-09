@@ -24,7 +24,7 @@ func TestBuilder_WithName(t *testing.T) {
 
 func TestBuilder_WithContext(t *testing.T) {
 
-	override := flow.NewContext(context.TODO(), 0)
+	override := flow.NewContext(context.Background(), 0)
 	workflow := flow.NewBuilder().WithContext(override).Run(func(t *flow.T, ctx flow.Context) {
 		assert.Same(t, override, ctx)
 	})
@@ -35,7 +35,7 @@ func TestBuilder_WithContext(t *testing.T) {
 func TestBuilder_WithName_WithContext(t *testing.T) {
 
 	name := "overridden-name"
-	override := flow.NewContext(context.TODO(), 0)
+	override := flow.NewContext(context.Background(), 0)
 	workflow := flow.NewBuilder().WithName(name).WithContext(override).Run(func(t *flow.T, ctx flow.Context) {
 		assert.Equal(t, name, t.Name())
 		assert.Same(t, override, ctx)
@@ -47,7 +47,7 @@ func TestBuilder_WithName_WithContext(t *testing.T) {
 func TestBuilder_Middleware_Reset(t *testing.T) {
 
 	name := "overridden-name"
-	override := flow.NewContext(context.TODO(), 0)
+	override := flow.NewContext(context.Background(), 0)
 	b := flow.NewBuilder()
 
 	flow.Run(

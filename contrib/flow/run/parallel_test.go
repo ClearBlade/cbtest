@@ -1,10 +1,11 @@
-package flow_test
+package run_test
 
 import (
 	"sync/atomic"
 	"testing"
 
 	"github.com/clearblade/cbtest/contrib/flow"
+	"github.com/clearblade/cbtest/contrib/flow/run"
 	"github.com/clearblade/cbtest/mocks"
 	"github.com/stretchr/testify/assert"
 )
@@ -13,7 +14,7 @@ func TestParallel_NoWorkers(t *testing.T) {
 
 	total := int32(0)
 
-	workflow := flow.Parallel()
+	workflow := run.Parallel()
 
 	mockT := &mocks.T{}
 	mockT.On("Helper")
@@ -27,7 +28,7 @@ func TestParallel_OneWorker(t *testing.T) {
 
 	total := int32(0)
 
-	workflow := flow.Parallel(
+	workflow := run.Parallel(
 		func(t *flow.T, ctx flow.Context) {
 			atomic.AddInt32(&total, 1)
 		},
@@ -45,7 +46,7 @@ func TestParallel_TwoWorkers(t *testing.T) {
 
 	total := int32(0)
 
-	workflow := flow.Parallel(
+	workflow := run.Parallel(
 
 		func(t *flow.T, ctx flow.Context) {
 			atomic.AddInt32(&total, 1)
@@ -68,7 +69,7 @@ func TestParallel_ThreeWorkers(t *testing.T) {
 
 	total := int32(0)
 
-	workflow := flow.Parallel(
+	workflow := run.Parallel(
 
 		func(t *flow.T, ctx flow.Context) {
 			atomic.AddInt32(&total, 1)
@@ -95,7 +96,7 @@ func TestParallel_FailedWorker(t *testing.T) {
 
 	total := int32(0)
 
-	workflow := flow.Parallel(
+	workflow := run.Parallel(
 
 		func(t *flow.T, ctx flow.Context) {
 			atomic.AddInt32(&total, 1)

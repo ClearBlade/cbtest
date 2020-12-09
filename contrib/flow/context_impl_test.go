@@ -9,7 +9,7 @@ import (
 
 func TestUnwrapSucceeds(t *testing.T) {
 
-	ctx := newContext(context.Background(), 0)
+	ctx := NewContext(context.Background(), 0)
 
 	ctx.Stash("one", 1)
 	ctx.Stash("two", 2)
@@ -24,7 +24,7 @@ func TestUnwrapSucceeds(t *testing.T) {
 
 func TestStashSucceeds(t *testing.T) {
 
-	ctx := newContext(context.Background(), 0)
+	ctx := NewContext(context.Background(), 0)
 
 	ctx.Stash("one", 1)
 	ctx.Stash("two", 2)
@@ -48,7 +48,7 @@ func TestUnstash_FromParentContextSucceeds(t *testing.T) {
 	rawctx = context.WithValue(rawctx, keyTwo, 2)
 	rawctx = context.WithValue(rawctx, keyThree, 3)
 
-	ctx := newContext(rawctx, 0)
+	ctx := NewContext(rawctx, 0)
 
 	assert.Equal(t, 1, ctx.Unstash(keyOne))
 	assert.Equal(t, 2, ctx.Unstash(keyTwo))

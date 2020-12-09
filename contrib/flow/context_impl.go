@@ -9,7 +9,8 @@ type contextImpl struct {
 	identifier int
 }
 
-func newContext(wrapped context.Context, identifier int) *contextImpl {
+// NewContext returns a new flow.Context instance.
+func NewContext(wrapped context.Context, identifier int) Context {
 	return &contextImpl{wrapped, identifier}
 }
 

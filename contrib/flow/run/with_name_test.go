@@ -1,9 +1,10 @@
-package flow_test
+package run_test
 
 import (
 	"testing"
 
 	"github.com/clearblade/cbtest/contrib/flow"
+	"github.com/clearblade/cbtest/contrib/flow/run"
 	"github.com/clearblade/cbtest/mocks"
 	"github.com/stretchr/testify/assert"
 )
@@ -12,7 +13,7 @@ func TestWithName(t *testing.T) {
 
 	name := ""
 
-	workflow := flow.WithName("overridden-name", func(t *flow.T, ctx flow.Context) {
+	workflow := run.WithName("overridden-name", func(t *flow.T, ctx flow.Context) {
 		name = t.Name()
 	})
 
@@ -27,8 +28,8 @@ func TestWithName_Nested(t *testing.T) {
 
 	name := ""
 
-	workflow := flow.Sequence(
-		flow.WithName("overridden-sequence", func(t *flow.T, ctx flow.Context) {
+	workflow := run.Sequence(
+		run.WithName("overridden-sequence", func(t *flow.T, ctx flow.Context) {
 			name = t.Name()
 		}),
 	)
@@ -44,9 +45,9 @@ func TestWithName_MoreNested(t *testing.T) {
 
 	name := ""
 
-	workflow := flow.Sequence(
-		flow.Parallel(
-			flow.WithName("overridden-parallel", func(t *flow.T, ctx flow.Context) {
+	workflow := run.Sequence(
+		run.Parallel(
+			run.WithName("overridden-parallel", func(t *flow.T, ctx flow.Context) {
 				name = t.Name()
 			}),
 		),

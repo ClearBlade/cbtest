@@ -45,11 +45,11 @@ func RunWithOutputE(t cbtest.T, worker Worker, output io.Writer) bool {
 
 	wg := sync.WaitGroup{}
 	workerFn := worker
-	workerT := newFlowT("root", output)
-	workerCtx := newContext(context.TODO(), 0)
+	workerT := NewTWithOutput("root", output)
+	workerCtx := NewContext(context.TODO(), 0)
 
 	wg.Add(1)
-	go workerRunner(&wg, workerFn, workerT, workerCtx)
+	go Work(&wg, workerFn, workerT, workerCtx)
 	wg.Wait()
 
 	return !workerT.Failed()

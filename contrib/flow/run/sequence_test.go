@@ -1,9 +1,10 @@
-package flow_test
+package run_test
 
 import (
 	"testing"
 
 	"github.com/clearblade/cbtest/contrib/flow"
+	"github.com/clearblade/cbtest/contrib/flow/run"
 	"github.com/clearblade/cbtest/mocks"
 	"github.com/stretchr/testify/assert"
 )
@@ -12,7 +13,7 @@ func TestSequence_NoWorkers(t *testing.T) {
 
 	numbers := []int{}
 
-	workflow := flow.Sequence()
+	workflow := run.Sequence()
 
 	mockT := &mocks.T{}
 	mockT.On("Helper")
@@ -26,7 +27,7 @@ func TestSequence_OneWorker(t *testing.T) {
 
 	numbers := []int{}
 
-	workflow := flow.Sequence(
+	workflow := run.Sequence(
 		func(t *flow.T, ctx flow.Context) {
 			numbers = append(numbers, 1)
 		},
@@ -44,7 +45,7 @@ func TestSequence_TwoWorkers(t *testing.T) {
 
 	numbers := []int{}
 
-	workflow := flow.Sequence(
+	workflow := run.Sequence(
 
 		func(t *flow.T, ctx flow.Context) {
 			numbers = append(numbers, 1)
@@ -67,7 +68,7 @@ func TestSequence_ThreeWorkers(t *testing.T) {
 
 	numbers := []int{}
 
-	workflow := flow.Sequence(
+	workflow := run.Sequence(
 
 		func(t *flow.T, ctx flow.Context) {
 			numbers = append(numbers, 1)
@@ -94,7 +95,7 @@ func TestSequence_FailedWorker(t *testing.T) {
 
 	numbers := []int{}
 
-	workflow := flow.Sequence(
+	workflow := run.Sequence(
 
 		func(t *flow.T, ctx flow.Context) {
 			numbers = append(numbers, 1)

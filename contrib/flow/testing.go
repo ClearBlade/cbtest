@@ -32,8 +32,9 @@ type T struct {
 	failed      bool
 }
 
-// newFlowT returns a new *flow.T without a parent.
-func newFlowT(name string, output io.Writer) *T {
+// NewTWithOutput returns a new *flow.T instance with the given name that writes
+// its output to the given io.Writer.
+func NewTWithOutput(name string, output io.Writer) *T {
 	return &T{
 		name:        name,
 		helperNames: make(map[string]struct{}),
@@ -43,8 +44,8 @@ func newFlowT(name string, output io.Writer) *T {
 	}
 }
 
-// newChildFlowT returns a new *flow.T with the given parent.
-func newChildFlowT(parent *T, name string) *T {
+// NewChildT returns a new child *flow.T instance.
+func NewChildT(parent *T, name string) *T {
 	return &T{
 		parent:      parent,
 		name:        name,
@@ -53,6 +54,19 @@ func newChildFlowT(parent *T, name string) *T {
 		mu:          &sync.RWMutex{},
 		output:      parent.output,
 		outputmu:    parent.outputmu,
+	}
+}
+
+// NewSiblingT returns a new sibling *flow.T instance.
+func NewSiblingT(sibling *T, name string) *T {
+	return &T{
+		parent:      sibling.parent,
+		name:        name,
+		depth:       sibling.depth,
+		helperNames: make(map[string]struct{}),
+		mu:          &sync.RWMutex{},
+		output:      sibling.output,
+		outputmu:    sibling.outputmu,
 	}
 }
 

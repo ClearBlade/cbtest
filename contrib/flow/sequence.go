@@ -20,7 +20,7 @@ func sequence(workers ...Worker) Worker {
 		for idx, fn := range workers {
 
 			workerFn := fn
-			workerT := newChildT(t, fmt.Sprintf("seq-%d", idx))
+			workerT := newChildT(t, fmt.Sprintf("seq#%d", idx))
 			workerCtx := NewContext(ctx.Unwrap(), idx)
 
 			wg.Add(1)

@@ -11,13 +11,13 @@ func sequence(workers ...Worker) Worker {
 
 	return func(t *T, ctx Context) {
 
-		if t.Failed() {
-			return
-		}
-
 		wg := sync.WaitGroup{}
 
 		for idx, fn := range workers {
+
+			if t.Failed() {
+				return
+			}
 
 			workerFn := fn
 			workerT := newChildT(t, fmt.Sprintf("seq#%d", idx))

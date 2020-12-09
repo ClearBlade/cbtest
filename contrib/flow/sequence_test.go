@@ -85,7 +85,7 @@ func TestSequence_ThreeWorkers(t *testing.T) {
 	assert.Equal(t, []int{1, 2, 3}, numbers)
 }
 
-func TestSequence_FailedWorker(t *testing.T) {
+func TestSequence_FailedWorkerInterruptsSequence(t *testing.T) {
 
 	numbers := []int{}
 	workflow := sequence(
@@ -95,11 +95,11 @@ func TestSequence_FailedWorker(t *testing.T) {
 		},
 
 		func(t *T, ctx Context) {
-			numbers = append(numbers, 2)
+			t.Errorf("Always fail")
 		},
 
 		func(t *T, ctx Context) {
-			t.Errorf("Always fail")
+			numbers = append(numbers, 4)
 		},
 	)
 
@@ -109,5 +109,5 @@ func TestSequence_FailedWorker(t *testing.T) {
 	Run(mockT, workflow)
 
 	mockT.AssertExpectations(t)
-	assert.Equal(t, []int{1, 2}, numbers)
+	assert.Equal(t, []int{1}, numbers)
 }

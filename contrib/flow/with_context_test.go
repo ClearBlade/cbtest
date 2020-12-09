@@ -11,7 +11,7 @@ import (
 func TestWithContext(t *testing.T) {
 
 	number := 0
-	override := NewContext(context.TODO(), 0)
+	override := NewContext(context.Background(), 0)
 	override.Stash("overridden-number", 1)
 	workflow := withContext(override, func(t *T, ctx Context) {
 		number = ctx.Unstash("overridden-number").(int)

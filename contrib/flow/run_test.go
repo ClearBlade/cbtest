@@ -19,24 +19,3 @@ func TestRun_FailedWorkerFailsTest(t *testing.T) {
 
 	mockT.AssertExpectations(t)
 }
-
-func TestStuff(t *testing.T) {
-
-	t.Run("the lazy dog", func(t *testing.T) {
-		t.Parallel()
-
-		t.Log("foo")
-		t.Log("bar")
-		t.Log("baz")
-
-	})
-
-	t.Run("Other", func(t *testing.T) {
-		t.Parallel()
-
-		t.Log("one")
-		t.Log("two")
-		t.Log("three")
-
-	})
-}

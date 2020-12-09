@@ -1,10 +1,8 @@
-package run_test
+package flow
 
 import (
 	"testing"
 
-	"github.com/clearblade/cbtest/contrib/flow"
-	"github.com/clearblade/cbtest/contrib/flow/run"
 	"github.com/clearblade/cbtest/mocks"
 	"github.com/stretchr/testify/assert"
 )
@@ -12,12 +10,11 @@ import (
 func TestSequence_NoWorkers(t *testing.T) {
 
 	numbers := []int{}
-
-	workflow := run.Sequence()
+	workflow := sequence()
 
 	mockT := &mocks.T{}
 	mockT.On("Helper")
-	flow.Run(mockT, workflow)
+	Run(mockT, workflow)
 
 	mockT.AssertExpectations(t)
 	assert.Equal(t, []int{}, numbers)
@@ -26,16 +23,15 @@ func TestSequence_NoWorkers(t *testing.T) {
 func TestSequence_OneWorker(t *testing.T) {
 
 	numbers := []int{}
-
-	workflow := run.Sequence(
-		func(t *flow.T, ctx flow.Context) {
+	workflow := sequence(
+		func(t *T, ctx Context) {
 			numbers = append(numbers, 1)
 		},
 	)
 
 	mockT := &mocks.T{}
 	mockT.On("Helper")
-	flow.Run(mockT, workflow)
+	Run(mockT, workflow)
 
 	mockT.AssertExpectations(t)
 	assert.Equal(t, []int{1}, numbers)
@@ -44,21 +40,20 @@ func TestSequence_OneWorker(t *testing.T) {
 func TestSequence_TwoWorkers(t *testing.T) {
 
 	numbers := []int{}
+	workflow := sequence(
 
-	workflow := run.Sequence(
-
-		func(t *flow.T, ctx flow.Context) {
+		func(t *T, ctx Context) {
 			numbers = append(numbers, 1)
 		},
 
-		func(t *flow.T, ctx flow.Context) {
+		func(t *T, ctx Context) {
 			numbers = append(numbers, 2)
 		},
 	)
 
 	mockT := &mocks.T{}
 	mockT.On("Helper")
-	flow.Run(mockT, workflow)
+	Run(mockT, workflow)
 
 	mockT.AssertExpectations(t)
 	assert.Equal(t, []int{1, 2}, numbers)
@@ -67,25 +62,24 @@ func TestSequence_TwoWorkers(t *testing.T) {
 func TestSequence_ThreeWorkers(t *testing.T) {
 
 	numbers := []int{}
+	workflow := sequence(
 
-	workflow := run.Sequence(
-
-		func(t *flow.T, ctx flow.Context) {
+		func(t *T, ctx Context) {
 			numbers = append(numbers, 1)
 		},
 
-		func(t *flow.T, ctx flow.Context) {
+		func(t *T, ctx Context) {
 			numbers = append(numbers, 2)
 		},
 
-		func(t *flow.T, ctx flow.Context) {
+		func(t *T, ctx Context) {
 			numbers = append(numbers, 3)
 		},
 	)
 
 	mockT := &mocks.T{}
 	mockT.On("Helper")
-	flow.Run(mockT, workflow)
+	Run(mockT, workflow)
 
 	mockT.AssertExpectations(t)
 	assert.Equal(t, []int{1, 2, 3}, numbers)
@@ -94,18 +88,17 @@ func TestSequence_ThreeWorkers(t *testing.T) {
 func TestSequence_FailedWorker(t *testing.T) {
 
 	numbers := []int{}
+	workflow := sequence(
 
-	workflow := run.Sequence(
-
-		func(t *flow.T, ctx flow.Context) {
+		func(t *T, ctx Context) {
 			numbers = append(numbers, 1)
 		},
 
-		func(t *flow.T, ctx flow.Context) {
+		func(t *T, ctx Context) {
 			numbers = append(numbers, 2)
 		},
 
-		func(t *flow.T, ctx flow.Context) {
+		func(t *T, ctx Context) {
 			t.Errorf("Always fail")
 		},
 	)
@@ -113,7 +106,7 @@ func TestSequence_FailedWorker(t *testing.T) {
 	mockT := &mocks.T{}
 	mockT.On("Helper")
 	mockT.On("FailNow")
-	flow.Run(mockT, workflow)
+	Run(mockT, workflow)
 
 	mockT.AssertExpectations(t)
 	assert.Equal(t, []int{1, 2}, numbers)

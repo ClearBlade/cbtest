@@ -8,11 +8,11 @@ import (
 // Worker is a function that represents a worker with a context.
 type Worker func(t *T, ctx Context)
 
-// Work executes the given worker and calls the Done function of the given
+// workerRunner executes the given worker and calls the Done function of the given
 // *sync.WaitGroup after execution. It also captures any panic to transform
 // it into an error (reported to the *flow.T instance). Note that this function
 // should usually be called as a goroutine.
-func Work(wg *sync.WaitGroup, worker Worker, workerT *T, workerCtx Context) {
+func workerRunner(wg *sync.WaitGroup, worker Worker, workerT *T, workerCtx Context) {
 
 	defer func() {
 		if wg != nil {

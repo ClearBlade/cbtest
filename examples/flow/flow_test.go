@@ -1,7 +1,7 @@
-// Package streatming showcases a test that interacts and measures simple
-// metrics for a streaming service.
-// See: https://blog.golang.org/subtests
-package streaming
+// Package flow showcases a test with a more complex test structure using the
+// flow module. It consists of three sequential stages, with most sub-tests in
+// each stage running in parallel.
+package flow
 
 import (
 	"encoding/json"
@@ -13,7 +13,7 @@ import (
 
 	cb "github.com/clearblade/Go-SDK"
 	"github.com/clearblade/cbtest"
-	"github.com/clearblade/cbtest/contrib/fanout"
+	"github.com/clearblade/cbtest/contrib/flow"
 	"github.com/clearblade/cbtest/modules/auth"
 	"github.com/clearblade/cbtest/modules/collection"
 	"github.com/clearblade/cbtest/modules/mqtt"
@@ -39,9 +39,9 @@ var (
 	flagPeriod    = flag.Duration("period", time.Millisecond*100, "Period between publishes")
 )
 
-// Test
+// Main
 
-func TestStreaming(t *testing.T) {
+func TestFlow(t *testing.T) {
 
 	logFlags(t)
 
@@ -65,40 +65,61 @@ func TestStreaming(t *testing.T) {
 	err = devClient.DeleteData(collID, cb.NewQuery())
 	should.NoError(t, err)
 
-	// stage-0
-
-	devicesCreateAndConnect := fanout.Run(t, "Devices create and connect", *flagDevices, stageCreateAndConnect(s))
-
-	fanout.Wait(t, devicesCreateAndConnect, time.Minute)
-
-	// stage-1
-
-	totalPublishes := int32(0)
-
-	devicesPublish := fanout.Continue(t, "Devices publish", devicesCreateAndConnect, stagePublish(s, &totalPublishes))
-
-	fanout.Wait(t, devicesPublish, time.Minute)
-
-	// check results
-
-	checkResults(t, s, int(totalPublishes))
+	// run workflow against the created system
+	runWorkflow(t, s)
 }
 
-// Stages
+// Workflow
 
-func stageCreateAndConnect(s *system.EphemeralSystem) fanout.WorkerFunc {
-	return func(t cbtest.T, ctx fanout.Context) {
+func runWorkflow(t *testing.T, s *system.EphemeralSystem) {
+
+	// total messages published (shared global between workers)
+	totalPublished := int32(0)
+
+	// device context memoizer (separate context per worker)
+	devices := flow.NewMemoizer()
+
+	// build workflow
+	workflow := flow.NewBuilder().Sequence(func(b *flow.Builder) {
+
+		// Stage 0 (Initialize)
+
+		b.WithName("Devices create and connect").Parallel(func(b *flow.Builder) {
+			for idx := 0; idx < *flagDevices; idx++ {
+				b.WithContext(devices.Get(idx)).Run(deviceInit(s))
+			}
+		})
+
+		// Stage 1 (Publish)
+
+		b.WithName("Devices publish").Parallel(func(b *flow.Builder) {
+			for idx := 0; idx < *flagDevices; idx++ {
+				b.WithContext(devices.Get(idx)).Run(devicePublish(s, &totalPublished))
+			}
+		})
+
+		// Stage 2 (Check)
+
+		b.WithName("Check results").Run(checkResults(s, &totalPublished))
+	})
+
+	flow.Run(t, workflow)
+}
+
+func deviceInit(s *system.EphemeralSystem) flow.Worker {
+
+	return func(t *flow.T, ctx flow.Context) {
 
 		idx := ctx.Identifier()
 		name := fmt.Sprintf("Device-%d", idx)
 
-		t.Log("Registering device")
+		t.Log("Registering device...")
 		auth.RegisterDevice(t, s, name, "active-key")
 
-		t.Log("Logging in")
+		t.Log("Logging in device...")
 		deviceClient := auth.LoginDevice(t, s, name, "active-key")
 
-		t.Log("Initializing MQTT")
+		t.Log("Initializing MQTT...")
 		mqtt.InitializeMQTT(t, s, deviceClient)
 
 		// stash values that we can use later
@@ -106,8 +127,9 @@ func stageCreateAndConnect(s *system.EphemeralSystem) fanout.WorkerFunc {
 	}
 }
 
-func stagePublish(s *system.EphemeralSystem, totalPublishes *int32) fanout.WorkerFunc {
-	return func(t cbtest.T, ctx fanout.Context) {
+func devicePublish(s *system.EphemeralSystem, totalPublished *int32) flow.Worker {
+
+	return func(t *flow.T, ctx flow.Context) {
 
 		// unstash client from previous stage
 		deviceClient, ok := ctx.Unstash("deviceClient").(*cb.DeviceClient)
@@ -127,7 +149,7 @@ func stagePublish(s *system.EphemeralSystem, totalPublishes *int32) fanout.Worke
 			should.NoError(t, err)
 
 			// increment global counter using atomic operation
-			atomic.AddInt32(totalPublishes, 1)
+			atomic.AddInt32(totalPublished, 1)
 
 			// sleep until we can publish again
 			time.Sleep(*flagPeriod)
@@ -136,17 +158,9 @@ func stagePublish(s *system.EphemeralSystem, totalPublishes *int32) fanout.Worke
 	}
 }
 
-// Test helpers
+func checkResults(s *system.EphemeralSystem, totalPublished *int32) flow.Worker {
 
-func logFlags(t *testing.T) {
-	t.Logf("Publish duration: %s", *flagDuration)
-	t.Logf("Service instances running: %d", *flagInstances)
-	t.Logf("Total devices publishing: %d", *flagDevices)
-	t.Logf("Period between publishes: %s", *flagPeriod)
-}
-
-func checkResults(t *testing.T, s *system.EphemeralSystem, messagesPublished int) {
-	t.Run("Check results", func(t *testing.T) {
+	return func(t *flow.T, ctx flow.Context) {
 
 		// ID of the collection we are gonna check
 		collID := collection.IDByName(t, s, MessagesCollection)
@@ -155,12 +169,27 @@ func checkResults(t *testing.T, s *system.EphemeralSystem, messagesPublished int
 		totalRows := collection.Total(t, s, collID)
 
 		// check the number of rows equals number of messages published
-		should.ExpectE(t, totalRows, to.Equal(messagesPublished), "Collection rows does not match total messages published")
+		should.ExpectE(t, totalRows, to.BeNumerically("==", *totalPublished), "Collection rows does not match total messages published")
 
-		// logs results
-		t.Logf("Publish duration: %s", *flagDuration)
-		t.Logf("Messages published: %d", messagesPublished)
-		t.Logf("Messages in collection: %d", totalRows)
-		t.Logf("Messages per/sec: %d", totalRows/int(flagDuration.Seconds()))
-	})
+		// show results
+		logResults(t, totalRows, int(*totalPublished))
+	}
+}
+
+// Log helpers
+
+func logFlags(t cbtest.T) {
+	t.Helper()
+	t.Logf("Publish duration: %s", *flagDuration)
+	t.Logf("Service instances running: %d", *flagInstances)
+	t.Logf("Total devices publishing: %d", *flagDevices)
+	t.Logf("Period between publishes: %s", *flagPeriod)
+}
+
+func logResults(t cbtest.T, totalRows, totalPublished int) {
+	t.Helper()
+	t.Logf("Publish duration: %s", *flagDuration)
+	t.Logf("Messages published: %d", totalPublished)
+	t.Logf("Messages in collection: %d", totalRows)
+	t.Logf("Messages per/sec: %d", totalRows/int(flagDuration.Seconds()))
 }

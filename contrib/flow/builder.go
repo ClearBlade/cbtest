@@ -16,7 +16,7 @@ type Builder struct {
 	workers []Worker
 
 	// middlware updates a Worker before adding it to the queue of workers.
-	middleware func(Worker) Worker
+	middleware []func(Worker) Worker
 }
 
 // NewBuilder returns a new *Builder instance.
@@ -28,11 +28,10 @@ func NewBuilder() *Builder {
 
 // applyMiddleware applies all pending middleware to the given worker.
 func (b *Builder) applyMiddleware(worker Worker) Worker {
-	if b.middleware != nil {
-		worker = b.middleware(worker)
-		b.middleware = nil
-		return worker
+	for _, m := range b.middleware {
+		worker = m(worker)
 	}
+	b.middleware = []func(Worker) Worker{}
 	return worker
 }
 
@@ -45,17 +44,17 @@ func (b *Builder) appendWorker(worker Worker) Worker {
 
 // WithName sets the name to use for the next builder call.
 func (b *Builder) WithName(name string) *Builder {
-	b.middleware = func(worker Worker) Worker {
-		return WithName(name, worker)
-	}
+	b.middleware = append(b.middleware, func(worker Worker) Worker {
+		return withName(name, worker)
+	})
 	return b
 }
 
 // WithContext sets the context to use for the next builder call.
 func (b *Builder) WithContext(ctx Context) *Builder {
-	b.middleware = func(worker Worker) Worker {
-		return worker
-	}
+	b.middleware = append(b.middleware, func(worker Worker) Worker {
+		return withContext(ctx, worker)
+	})
 	return b
 }
 

@@ -7,11 +7,7 @@
             "ColumnType": "uuid",
             "PK": true
         },
-        {
-            "ColumnName": "timestamp",
-            "ColumnType": "int",
-            "PK": false
-        },
+
         {
             "ColumnName": "message",
             "ColumnType": "string",

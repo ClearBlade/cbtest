@@ -1,6 +1,7 @@
 package flow_test
 
 import (
+	"context"
 	"sync"
 	"testing"
 	"time"
@@ -13,23 +14,62 @@ import (
 
 func TestBuilder_WithName(t *testing.T) {
 
-	name := ""
-
-	workflow := flow.NewBuilder().WithName("overridden-name").Run(func(t *flow.T, ctx flow.Context) {
-		name = t.Name()
+	name := "overridden-name"
+	workflow := flow.NewBuilder().WithName(name).Run(func(t *flow.T, ctx flow.Context) {
+		assert.Equal(t, name, t.Name())
 	})
 
-	mockT := &mocks.T{}
-	mockT.On("Helper")
-	flow.Run(mockT, workflow)
+	flow.Run(t, workflow)
+}
 
-	assert.Equal(t, "overridden-name", name)
+func TestBuilder_WithContext(t *testing.T) {
+
+	override := flow.NewContext(context.TODO(), 0)
+	workflow := flow.NewBuilder().WithContext(override).Run(func(t *flow.T, ctx flow.Context) {
+		assert.Same(t, override, ctx)
+	})
+
+	flow.Run(t, workflow)
+}
+
+func TestBuilder_WithName_WithContext(t *testing.T) {
+
+	name := "overridden-name"
+	override := flow.NewContext(context.TODO(), 0)
+	workflow := flow.NewBuilder().WithName(name).WithContext(override).Run(func(t *flow.T, ctx flow.Context) {
+		assert.Equal(t, name, t.Name())
+		assert.Same(t, override, ctx)
+	})
+
+	flow.Run(t, workflow)
+}
+
+func TestBuilder_Middleware_Reset(t *testing.T) {
+
+	name := "overridden-name"
+	override := flow.NewContext(context.TODO(), 0)
+	b := flow.NewBuilder()
+
+	flow.Run(
+		t,
+		b.WithName(name).WithContext(override).Run(func(t *flow.T, ctx flow.Context) {
+			assert.Equal(t, name, t.Name())
+			assert.Same(t, override, ctx)
+		}),
+	)
+
+	flow.Run(
+		t,
+		b.Run(func(t *flow.T, ctx flow.Context) {
+			assert.NotEqual(t, name, t.Name())
+			assert.NotSame(t, override, ctx)
+		}),
+	)
 }
 
 func TestBuilder_Sequence(t *testing.T) {
 
 	numbers := []int{}
-
 	workflow := flow.NewBuilder().Sequence(func(b *flow.Builder) {
 
 		b.Run(func(t *flow.T, ctx flow.Context) {
@@ -56,7 +96,6 @@ func TestBuilder_Parallel(t *testing.T) {
 
 	wg := sync.WaitGroup{}
 	wg.Add(3)
-
 	workflow := flow.NewBuilder().Parallel(func(b *flow.Builder) {
 
 		b.Run(func(t *flow.T, ctx flow.Context) {

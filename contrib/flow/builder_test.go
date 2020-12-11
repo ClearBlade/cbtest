@@ -14,8 +14,8 @@ import (
 func makeFooBorrower() flow.Borrower {
 	borrower := flow.NewMemoizer().Get(0)
 	ctx, release, _ := borrower.Borrow()
+	defer release()
 	ctx.Stash("foo", "bar")
-	release()
 	return borrower
 }
 

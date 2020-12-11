@@ -25,7 +25,6 @@ func ExampleNewMemoizer() {
 		b.WithContext(memo.Get(0)).Run(func(t *flow.T, ctx flow.Context) {
 			fmt.Println(ctx.Unstash("message"))
 		})
-
 	})
 
 	flow.Run(mockT, workflow)

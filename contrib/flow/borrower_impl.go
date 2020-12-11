@@ -13,7 +13,7 @@ type borrowerImpl struct {
 }
 
 // newBorrower returns a new Borrower instance with the given Context.
-func newBorrower(ctx Context) *borrowerImpl {
+func newBorrower(ctx Context) Borrower {
 	return &borrowerImpl{ctx, false, sync.Mutex{}}
 }
 

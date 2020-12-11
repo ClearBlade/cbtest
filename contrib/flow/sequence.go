@@ -21,7 +21,7 @@ func sequence(workers ...Worker) Worker {
 
 			workerFn := fn
 			workerT := newChildT(t, fmt.Sprintf("seq#%d", idx))
-			workerCtx := NewContext(ctx.Unwrap(), idx)
+			workerCtx := newContext(ctx.Unwrap(), idx)
 
 			wg.Add(1)
 			workerRunner(&wg, workerFn, workerT, workerCtx)

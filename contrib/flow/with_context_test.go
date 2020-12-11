@@ -11,9 +11,11 @@ import (
 func TestWithContext(t *testing.T) {
 
 	number := 0
-	override := NewContext(context.Background(), 0)
-	override.Stash("overridden-number", 1)
-	workflow := withContext(override, func(t *T, ctx Context) {
+	ctx := newContext(context.Background(), 0)
+	ctx.Stash("overridden-number", 1)
+	borrower := newBorrower(ctx)
+
+	workflow := withContext(borrower, func(t *T, ctx Context) {
 		number = ctx.Unstash("overridden-number").(int)
 	})
 
@@ -21,5 +23,22 @@ func TestWithContext(t *testing.T) {
 	mockT.On("Helper")
 	Run(mockT, workflow)
 
+	mockT.AssertExpectations(t)
 	assert.Equal(t, 1, number)
+}
+
+func TestWithContext_AlreadyBorrowedFails(t *testing.T) {
+
+	ctx := newContext(context.Background(), 0)
+	borrower := newBorrower(ctx)
+	_, _, _ = borrower.Borrow()
+
+	workflow := withContext(borrower, func(t *T, ctx Context) {})
+
+	mockT := &mocks.T{}
+	mockT.On("Helper")
+	mockT.On("FailNow")
+	Run(mockT, workflow)
+
+	mockT.AssertExpectations(t)
 }

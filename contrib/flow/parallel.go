@@ -21,7 +21,7 @@ func parallel(workers ...Worker) Worker {
 
 			workerFn := fn
 			workerT := newChildT(t, fmt.Sprintf("par#%d", idx))
-			workerCtx := NewContext(ctx.Unwrap(), idx)
+			workerCtx := newContext(ctx.Unwrap(), idx)
 
 			wg.Add(1)
 			go workerRunner(&wg, workerFn, workerT, workerCtx)

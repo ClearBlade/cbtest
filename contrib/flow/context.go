@@ -5,10 +5,10 @@ import (
 	"time"
 )
 
-// Context interface wraps around context.Context to provide saving (stash)
-// and laoding (unstash) of context values instead of just Value. For more
-// information regarding each of the functions please refer to the context.Context
-// docs in the standard library.
+// Context simulates the interfaces exposed by context.Context but with storing
+// (stash) and loading (unstash) of values. Note that users will never be able
+// to create Context instances directly, and will need to go through the borrower
+// instead.
 type Context interface {
 
 	// Deadline returns the time when work on behalf of this context should

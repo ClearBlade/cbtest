@@ -6,26 +6,26 @@ import (
 )
 
 type memoizerImpl struct {
-	contexts map[interface{}]Context
-	mu       sync.Mutex
+	borrowers map[interface{}]Borrower
+	mu        sync.Mutex
 }
 
 // NewMemoizer returns a new Memoizer instance.
 func NewMemoizer() Memoizer {
 	return &memoizerImpl{
-		contexts: make(map[interface{}]Context),
+		borrowers: make(map[interface{}]Borrower),
 	}
 }
 
-func (m *memoizerImpl) Get(key interface{}) Context {
+func (m *memoizerImpl) Get(key interface{}) Borrower {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	if ctx, ok := m.contexts[key]; ok {
-		return ctx
+	if b, ok := m.borrowers[key]; ok {
+		return b
 	}
 
-	ctx := NewContext(context.TODO(), len(m.contexts))
-	m.contexts[key] = ctx
-	return ctx
+	b := newBorrower(newContext(context.TODO(), len(m.borrowers)))
+	m.borrowers[key] = b
+	return b
 }

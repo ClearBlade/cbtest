@@ -1,8 +1,9 @@
 package flow
 
-// withContext returns the given worker but with the given context instead of
-// the one it already has.
-func withContext(ctx Context, worker Worker) Worker {
+// withContext borrows the context from the given Borrower and passes it to the
+// worker. Note that the worker will fail if another worker has already borrowed
+// the same context.
+func withContext(borrower Borrower, worker Worker) Worker {
 
 	return func(t *T, _ Context) {
 
@@ -10,6 +11,13 @@ func withContext(ctx Context, worker Worker) Worker {
 			return
 		}
 
+		ctx, release, err := borrower.Borrow()
+		if err != nil {
+			t.Errorf("%s", err)
+			t.FailNow()
+		}
+
+		defer release()
 		workerRunner(nil, worker, t, ctx)
 	}
 }

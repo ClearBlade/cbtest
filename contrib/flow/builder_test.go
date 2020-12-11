@@ -1,7 +1,6 @@
 package flow_test
 
 import (
-	"context"
 	"sync"
 	"testing"
 	"time"
@@ -11,6 +10,14 @@ import (
 	"github.com/clearblade/cbtest/mocks"
 	"github.com/stretchr/testify/assert"
 )
+
+func makeFooBorrower() flow.Borrower {
+	borrower := flow.NewMemoizer().Get(0)
+	ctx, release, _ := borrower.Borrow()
+	ctx.Stash("foo", "bar")
+	release()
+	return borrower
+}
 
 func TestBuilder_WithName(t *testing.T) {
 
@@ -24,9 +31,9 @@ func TestBuilder_WithName(t *testing.T) {
 
 func TestBuilder_WithContext(t *testing.T) {
 
-	override := flow.NewContext(context.Background(), 0)
+	override := makeFooBorrower()
 	workflow := flow.NewBuilder().WithContext(override).Run(func(t *flow.T, ctx flow.Context) {
-		assert.Same(t, override, ctx)
+		assert.Equal(t, "bar", ctx.Unstash("foo"))
 	})
 
 	flow.Run(t, workflow)
@@ -35,10 +42,10 @@ func TestBuilder_WithContext(t *testing.T) {
 func TestBuilder_WithName_WithContext(t *testing.T) {
 
 	name := "overridden-name"
-	override := flow.NewContext(context.Background(), 0)
+	override := makeFooBorrower()
 	workflow := flow.NewBuilder().WithName(name).WithContext(override).Run(func(t *flow.T, ctx flow.Context) {
 		assert.Equal(t, name, t.Name())
-		assert.Same(t, override, ctx)
+		assert.Equal(t, "bar", ctx.Unstash("foo"))
 	})
 
 	flow.Run(t, workflow)
@@ -47,14 +54,14 @@ func TestBuilder_WithName_WithContext(t *testing.T) {
 func TestBuilder_Middleware_Reset(t *testing.T) {
 
 	name := "overridden-name"
-	override := flow.NewContext(context.Background(), 0)
+	override := makeFooBorrower()
 	b := flow.NewBuilder()
 
 	flow.Run(
 		t,
 		b.WithName(name).WithContext(override).Run(func(t *flow.T, ctx flow.Context) {
 			assert.Equal(t, name, t.Name())
-			assert.Same(t, override, ctx)
+			assert.Equal(t, "bar", ctx.Unstash("foo"))
 		}),
 	)
 
@@ -62,7 +69,7 @@ func TestBuilder_Middleware_Reset(t *testing.T) {
 		t,
 		b.Run(func(t *flow.T, ctx flow.Context) {
 			assert.NotEqual(t, name, t.Name())
-			assert.NotSame(t, override, ctx)
+			assert.Nil(t, ctx.Unstash("foo"))
 		}),
 	)
 }

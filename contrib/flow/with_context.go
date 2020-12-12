@@ -3,7 +3,7 @@ package flow
 // withContext borrows the context from the given Borrower and passes it to the
 // worker. Note that the worker will fail if another worker has already borrowed
 // the same context.
-func withContext(borrower Borrower, worker Worker) Worker {
+func withContext(borrower ContextBorrower, worker Worker) Worker {
 
 	return func(t *T, _ Context) {
 

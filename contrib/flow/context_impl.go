@@ -2,22 +2,47 @@ package flow
 
 import (
 	"context"
+	"fmt"
 	"sync"
 )
 
 // wrapped is just a type alias to make the embedded context have a better name.
 type wrapped = context.Context
 
-// contextImpl implements the Context interface.
+// contextImpl implements the both the ContextBorrower and Context interfaces.
 type contextImpl struct {
 	wrapped
 	identifier int
+	borrowed   bool
 	mu         sync.Mutex
 }
 
-// newContext returns a new flow.Context instance.
+// newContextBorrower returns a new ContextBorrower instance.
+func newContextBorrower(wrapped context.Context, identifier int) ContextBorrower {
+	return &contextImpl{wrapped, identifier, false, sync.Mutex{}}
+}
+
+func (ctx *contextImpl) Borrow() (Context, func(), error) {
+	ctx.mu.Lock()
+	defer ctx.mu.Unlock()
+
+	if ctx.borrowed {
+		return nil, nil, fmt.Errorf("context already borrowed")
+	}
+
+	release := func() {
+		ctx.mu.Lock()
+		defer ctx.mu.Unlock()
+		ctx.borrowed = false
+	}
+
+	ctx.borrowed = true
+	return ctx, release, nil
+}
+
+// newContext returns a new Context instance.
 func newContext(wrapped context.Context, identifier int) Context {
-	return &contextImpl{wrapped, identifier, sync.Mutex{}}
+	return &contextImpl{wrapped, identifier, false, sync.Mutex{}}
 }
 
 func (ctx *contextImpl) Identifier() int {

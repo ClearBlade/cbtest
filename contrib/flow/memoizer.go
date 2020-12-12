@@ -4,6 +4,6 @@ package flow
 // running workers with shared context(s).
 type Memoizer interface {
 
-	// Get returns the same borrower for multiple invocations with the same key.
-	Get(key interface{}) Borrower
+	// Get returns the same context borrower for multiple invocations with the same key.
+	Get(key interface{}) ContextBorrower
 }

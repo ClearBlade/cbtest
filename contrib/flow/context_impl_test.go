@@ -5,7 +5,46 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+func TestBorrower_ReturnsSameContext(t *testing.T) {
+
+	borrower := newContextBorrower(context.Background(), 0)
+
+	ctx0, release, err := borrower.Borrow()
+	require.NoError(t, err)
+	release()
+
+	ctx1, release, err := borrower.Borrow()
+	require.NoError(t, err)
+	release()
+
+	assert.Same(t, ctx1, ctx0)
+}
+
+func TestBorrower_BorrowedReturnsError(t *testing.T) {
+
+	borrower := newContextBorrower(context.Background(), 0)
+
+	_, _, err := borrower.Borrow()
+	require.NoError(t, err)
+
+	_, _, err = borrower.Borrow()
+	assert.Error(t, err)
+}
+
+func TestBorrower_Release(t *testing.T) {
+
+	borrower := newContextBorrower(context.Background(), 0)
+
+	_, release, err := borrower.Borrow()
+	require.NoError(t, err)
+
+	release()
+	_, _, err = borrower.Borrow()
+	assert.NoError(t, err)
+}
 
 func TestStashSucceeds(t *testing.T) {
 

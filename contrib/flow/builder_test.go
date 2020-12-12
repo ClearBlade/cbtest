@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func makeFooBorrower() flow.Borrower {
+func makeFooBorrower() flow.ContextBorrower {
 	borrower := flow.NewMemoizer().Get(0)
 	ctx, release, _ := borrower.Borrow()
 	defer release()

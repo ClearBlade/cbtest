@@ -51,7 +51,7 @@ func (b *Builder) WithName(name string) *Builder {
 }
 
 // WithContext sets the context to use for the next builder call.
-func (b *Builder) WithContext(borrower Borrower) *Builder {
+func (b *Builder) WithContext(borrower ContextBorrower) *Builder {
 	b.middleware = append(b.middleware, func(worker Worker) Worker {
 		return withContext(borrower, worker)
 	})

@@ -103,6 +103,7 @@ func runWorkflow(t *testing.T, s *system.EphemeralSystem) {
 		b.WithName("Check results").Run(checkResults(s, &totalPublished))
 	})
 
+	// run workflow (test will fail if workflow fails)
 	flow.Run(t, workflow)
 }
 

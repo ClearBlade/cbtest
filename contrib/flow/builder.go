@@ -35,7 +35,8 @@ func (b *Builder) applyMiddleware(worker Worker) Worker {
 	return worker
 }
 
-// appendWorker adds the given worker to the queue of workers and returns it.
+// appendWorker adds the given worker to the queue of workers and returns it
+// after applying all the pending middleware.
 func (b *Builder) appendWorker(worker Worker) Worker {
 	worker = b.applyMiddleware(worker)
 	b.workers = append(b.workers, worker)

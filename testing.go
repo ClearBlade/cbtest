@@ -6,6 +6,7 @@ package cbtest
 type T interface {
 	Error(args ...interface{})
 	Errorf(format string, args ...interface{})
+	Fail()
 	FailNow()
 	Helper()
 	Name() string

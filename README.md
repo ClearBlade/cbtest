@@ -41,6 +41,10 @@ go test -v ./examples/[EXAMPLE FOLDER]
 
 Please refer to our [wiki][wiki] for more details regarding `cbtest`.
 
+## Contributing
+
+To contribute, please follow the [guidelines](CONTRIBUTING.md).
+
 ## References
 
 [advanced-testing-in-go]: https://about.sourcegraph.com/go/advanced-testing-in-go/

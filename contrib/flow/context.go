@@ -29,7 +29,7 @@ type Context interface {
 	Done() <-chan struct{}
 
 	// Err returns nil if Done is not closed. Otherwise, it returns an error
-	// explaning why.
+	// explaining why.
 	Err() error
 
 	// Indentifier returns an integer that uniquely identifies this context
